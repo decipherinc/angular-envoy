@@ -1,0 +1,27 @@
+options:
+  banner: |
+    /*! <%= pkg.name %> - v<%= pkg.version %>
+     * <%= pkg.homepage %>
+     * Copyright (c) <%= grunt.template.today('yyyy') %> Focusvision Worldwide; Licensed <%= pkg.license %>
+     */
+main:
+  files:
+    envoy.js: index.js
+  options:
+    transform:
+      -
+        - exposify
+        -
+          expose:
+            angular: angular
+            lodash: _
+
+    browserifyOptions:
+      debug: true
+
+    plugin:
+      -
+        - minifyify
+        -
+          map: envoy.js.map
+          output: envoy.js.map

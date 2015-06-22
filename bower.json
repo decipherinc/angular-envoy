@@ -1,0 +1,28 @@
+{
+  "name": "angular-envoy",
+  "main": "index.js",
+  "version": "0.1.0",
+  "authors": [
+    "Christopher Hiller <chiller@focusvision.com>"
+  ],
+  "description": "Highly flexible form validation messaging for AngularJS",
+  "moduleType": [
+    "amd",
+    "globals",
+    "node"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "grunt",
+    "demo"
+  ],
+  "dependencies": {
+    "lodash": "~3.9.3",
+    "angular": "~1.4.1"
+  }
+}

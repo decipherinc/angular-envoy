@@ -1,0 +1,17 @@
+options:
+  files:
+    - package.json
+    - bower.json
+  updateConfigs:
+    - pkg
+  commit: true
+  commitMessage: Release v%VERSION%
+  commitFiles:
+    - package.json
+    - bower.json
+    - ./dist/*
+  createTag: true
+  tagName: v%VERSION%
+  tagMessage: Version %VERSION%
+  push: false
+  gitDescribeOptions: --tags --always --abrev=1 --dirty=-d
