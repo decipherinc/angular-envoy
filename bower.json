@@ -1,6 +1,6 @@
 {
   "name": "angular-envoy",
-  "main": "index.js",
+  "main": "envoy.js",
   "version": "0.1.0",
   "authors": [
     "Christopher Hiller <chiller@focusvision.com>"
