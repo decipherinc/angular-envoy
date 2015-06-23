@@ -4,6 +4,22 @@ options:
      * <%= pkg.homepage %>
      * Copyright (c) <%= grunt.template.today('yyyy') %> Focusvision Worldwide; Licensed <%= pkg.license %>
      */
+
+  browserifyOptions:
+    debug: true
+
+debug:
+  files:
+    envoy.debug.js: index.js
+  options:
+    transform:
+      -
+        - exposify
+        -
+          expose:
+            angular: angular
+            lodash: _
+
 main:
   files:
     envoy.js: index.js
@@ -15,9 +31,11 @@ main:
           expose:
             angular: angular
             lodash: _
-
-    browserifyOptions:
-      debug: true
+      -
+        - ./grunt/lib/stub-transform.js
+        -
+          global: true
+          files: '**/node_modules/debug/browser.js'
 
     plugin:
       -

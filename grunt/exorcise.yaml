@@ -1,0 +1,3 @@
+debug:
+  files:
+    envoy.debug.js.map: envoy.debug.js
