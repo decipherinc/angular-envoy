@@ -342,7 +342,8 @@ module.exports = proxy;
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null),
   opts = require('./opts');
 
-var BROADCAST_DEBOUNCE_MS = 250;
+var BROADCAST_DEBOUNCE_MS = 250,
+  debug = require('debug')('envoy:envoy:factory');
 
 function envoyFactory($http, $q) {
 
@@ -507,7 +508,11 @@ function envoyFactory($http, $q) {
       var parentForm = form,
         broadcasting = null,
         broadcast = _.debounce(function broadcast() {
-          var hierarchy = [];
+          var hierarchy = [parentForm];
+
+          debug('Broadcasting from form "%s"; "%s" changed',
+            form.$name,
+            control.$name);
 
           hierarchy.unshift(parentForm);
           while (parentForm.$$parentForm &&
@@ -644,17 +649,16 @@ module.exports = envoyFactory;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./opts":12}],11:[function(require,module,exports){
+},{"./opts":12,"debug":15}],11:[function(require,module,exports){
 (function (global){
 'use strict';
 
 var opts = require('./opts'),
   _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
 
-/**
- *
- */
-var envoyProvider = function envoyProvider() {
+var debug = require('debug')('envoy:envoy:provider');
+
+function envoyProvider() {
 
   /**
    * Set options during config phase
@@ -662,18 +666,20 @@ var envoyProvider = function envoyProvider() {
    * @returns {Object}
    */
   this.options = function options(newOpts) {
-    return _.extend(opts, newOpts);
+    _.extend(opts, newOpts);
+    debug('New options set:', opts);
+    return opts;
   };
 
   this.$get = require('./factory');
 
-};
+}
 
 module.exports = envoyProvider;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./factory":10,"./opts":12}],12:[function(require,module,exports){
+},{"./factory":10,"./opts":12,"debug":15}],12:[function(require,module,exports){
 'use strict';
 
 /**
