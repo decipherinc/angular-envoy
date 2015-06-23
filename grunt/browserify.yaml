@@ -8,9 +8,9 @@ options:
   browserifyOptions:
     debug: true
 
-debug:
+main:
   files:
-    envoy.debug.js: index.js
+    <%= bower.main %>: index.js
   options:
     transform:
       -
@@ -20,9 +20,9 @@ debug:
             angular: angular
             lodash: _
 
-main:
+min:
   files:
-    envoy.js: index.js
+    <%= min(bower.main) %>: index.js
   options:
     transform:
       -
@@ -31,15 +31,10 @@ main:
           expose:
             angular: angular
             lodash: _
-      -
-        - ./grunt/lib/stub-transform.js
-        -
-          global: true
-          files: '**/node_modules/debug/browser.js'
 
     plugin:
       -
         - minifyify
         -
-          map: envoy.js.map
-          output: envoy.js.map
+          map: <%= min(bower.main) %>.map
+          output: <%= min(bower.main) %>.map
