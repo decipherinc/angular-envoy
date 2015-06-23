@@ -20,7 +20,8 @@
     "tests",
     "grunt",
     "demo",
-    "Gruntfile.js"
+    "Gruntfile.js",
+    "*.map"
   ],
   "dependencies": {
     "lodash": ">=3.0.0",
