@@ -122,7 +122,6 @@ function MessagesCtrl($element,
     }
     view.scope = scope;
     scope.data = viewData($envoy.DEFAULT_LEVEL);
-
     return this;
   };
 
@@ -135,11 +134,30 @@ function MessagesCtrl($element,
     return this;
   };
 
+  this.addChild = function addChild(child) {
+    this.$children = (this.$children || []).push(child);
+    child.$parent = this;
+    return this;
+  };
+
+  this.removeChild = function removeChild(child) {
+    this.$children.splice(this.$children.indexOf(child), 1);
+    delete child.$parent;
+    return this;
+  };
+
+  this.title = function title(errorLevel) {
+    return $envoy.levelDescription(errorLevel);
+  };
+
   /**
    * @this MessagesCtrl
    */
   (function init() {
     var parentName, form;
+
+    this.$children = [];
+    this.$parent = null;
 
     Object.defineProperties(this, {
       $errorLevel: {
@@ -173,15 +191,19 @@ function MessagesCtrl($element,
 
     form = this.$form = $element.controller('form');
 
-    this.$parent =
-        $attrs.parent &&
-        (parentName = $interpolate($attrs.parent)($scope)) ?
-          $envoy.findParentCtrl(parentName,
-            $element.parent().controller('envoyMessages')) :
-          null;
+    if ($attrs.parent && (parentName = $interpolate($attrs.parent)($scope))) {
+      $envoy.findParentCtrl(parentName,
+        $element.parent().controller('envoyMessages')).addChild(this);
+
+      if (this.$parent.$form === form) {
+        this.$parent.removeChild(this);
+      }
+    }
 
     view =
       this.$parent ? (this.$view = this.$parent.$view) : (this.$view = {});
+
+    $envoy.bindForm(this, this.$form);
 
   }.call(this));
 }
@@ -219,15 +241,15 @@ var debug = require('debug')('envoy:directives:messages');
  *
  *
  */
-function messages($envoy) {
+function messages() {
   return {
     restrict: 'AE',
     require: 'envoyMessages',
     controller: require('./messages-ctrl'),
     scope: true,
-    link: function link(scope, element, attrs, messages) {
+    link: function link(scope, element, attrs, ctrl) {
       scope.$on('$formStateChanged', function (evt, data) {
-        var viewData = messages.$viewData,
+        var viewData = ctrl.$viewData,
           errorLevel;
         if (!viewData) {
           return;
@@ -237,12 +259,16 @@ function messages($envoy) {
         viewData.messages = data.messages;
         viewData.error = !!errorLevel;
         viewData.className = data.errorLevelName;
-        viewData.title = $envoy.levelDescription(errorLevel);
+        viewData.title = ctrl.title(errorLevel);
 
         debug('envoyMessages directive for form "%s" received ' +
           '$formStateChanged event; view data:',
-          messages.$name,
+          ctrl.$name,
           viewData);
+      });
+
+      scope.$on('$destroy', function () {
+        ctrl.$parent.removeChild(ctrl);
       });
     }
   };
@@ -313,7 +339,7 @@ function proxy($envoy) {
 
         scope.$on('$formStateChanged', function (evt, data) {
           var isInvalid;
-          if (_.find(data.forms, { $name: target })) {
+          //if (_.find(data.forms, { $name: target })) {
             _.each($envoy.ERRORLEVELS,
               function (errorlevel, errorLevelName) {
                 element.removeClass(errorLevelName);
@@ -323,7 +349,7 @@ function proxy($envoy) {
             if (isInvalid) {
               element.addClass(data.errorLevelName);
             }
-          }
+          //}
         });
       }
     }
@@ -369,6 +395,12 @@ function envoyFactory($http, $q) {
      * @type {Object.<string,Object.<string,string>>}
      */
     actions = {},
+
+    /**
+     * Map of form name to MessagesCtrl bindings
+     * @type {Object.<string,MessagesCtrl>}
+     */
+    bindings = {},
 
     prototype;
 
@@ -509,27 +541,57 @@ function envoyFactory($http, $q) {
     _lastControl: null,
     _lastControlError: null,
     _emitting: null,
-    $emit: function $emit(form, control) {
+    bindForm: function bindForm(ctrl, form) {
+      if (bindings[form.$name]) {
+        throw new Error('Form "' + form.$name +
+          '" already bound!  One envoyMessages directive per form, please.');
+      }
+      bindings[form.$name] = ctrl;
+    },
+    emit: function emit(form, control) {
+      function findParents(ctrl, list) {
+        list = list || [ctrl];
+        if (ctrl.$parent) {
+          list.push(ctrl.$parent);
+          return findParents(ctrl.$parent, list);
+        }
+        return list;
+      }
+
+      function findChildren(ctrl, list) {
+        list = list || [];
+        if (ctrl.$children.length) {
+          list.push.apply(list, ctrl.$children);
+          return _.map(ctrl.$children, function (child) {
+            return findChildren(child, list);
+          });
+        }
+        return _(list)
+          .flatten()
+          .unique()
+          .value();
+      }
+
+
       var emit = _.debounce(function emit() {
-        var hierarchy = [form],
-          parentForm = form;
+        var ctrl = bindings[form.$name],
+          parents = findParents(ctrl),
+          children = findChildren(ctrl),
+          ctrls = _.unique(parents.concat(children));
 
         debug('Emitting from form "%s"; "%s" changed',
           form.$name,
           control.$name);
 
-        while (parentForm.$$parentForm && parentForm.$$parentForm.$name) {
-          parentForm = parentForm.$$parentForm;
-          hierarchy.unshift(parentForm);
-        }
-
-        $envoy._emitting = $q.all(_.map(hierarchy, $envoy))
+        $envoy._emitting = $q.all(_.map(ctrls, function (ctrl) {
+          return $envoy(ctrl.$form);
+        }))
           .then(function (pileOfMessages) {
             var defaultLevel = LEVELS[opts.defaultLevel],
               messages = {},
               maxErrorLevel = _.reduce(pileOfMessages,
                 function (result, formMessages, idx) {
-                  var form = hierarchy[idx],
+                  var form = ctrls[idx],
                     errorLevelName = $envoy._formErrorLevel(form,
                       formMessages),
                     errorLevel = LEVELS[errorLevelName];
@@ -548,7 +610,6 @@ function envoyFactory($http, $q) {
                 errorLevel: maxErrorLevel,
                 errorLevelName: LEVEL_ARRAY[maxErrorLevel],
                 messages: _.omit(messages, _.isEmpty),
-                forms: hierarchy,
                 control: control
               });
 
@@ -859,7 +920,7 @@ function formDecorator($delegate) {
 
           if (formHasControl &&
             _.size(this.$error) !== this.$$lastErrorSize) {
-            $envoy.$emit(this, control);
+            $envoy.emit(this, control);
             this.$$lastErrorSize = _.size(this.$error);
           }
         }
