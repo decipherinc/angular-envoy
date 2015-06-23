@@ -591,7 +591,7 @@ function envoyFactory($http, $q) {
               messages = {},
               maxErrorLevel = _.reduce(pileOfMessages,
                 function (result, formMessages, idx) {
-                  var form = ctrls[idx],
+                  var form = ctrls[idx].$form,
                     errorLevelName = $envoy._formErrorLevel(form,
                       formMessages),
                     errorLevel = LEVELS[errorLevelName];
