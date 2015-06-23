@@ -19,7 +19,8 @@
     "test",
     "tests",
     "grunt",
-    "demo"
+    "demo",
+    "Gruntfile.js"
   ],
   "dependencies": {
     "lodash": ">=3.0.0",
