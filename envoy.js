@@ -608,7 +608,7 @@ function envoyFactory($http, $q) {
 
     levelDescription: function levelDescription(errorLevel) {
       var level;
-      return (level = $envoy.LEVELS[errorLevel] && level.description);
+      return ((level = $envoy.LEVELS[errorLevel]) && level.description);
     },
 
     /**
