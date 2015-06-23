@@ -508,9 +508,9 @@ function envoyFactory($http, $q) {
 
     _lastControl: null,
     _lastControlError: null,
+    _broadcasting,
     $broadcast: function $broadcast(form, control) {
       var parentForm = form,
-        broadcasting = null,
         broadcast = _.debounce(function broadcast() {
           var hierarchy = [parentForm];
 
@@ -523,7 +523,7 @@ function envoyFactory($http, $q) {
             hierarchy.unshift(parentForm);
           }
 
-          broadcasting = $q.all(_.map(hierarchy, $envoy))
+          $envoy._broadcasting = $q.all(_.map(hierarchy, $envoy))
             .then(function (pileOfMessages) {
               var defaultLevel = LEVELS[opts.defaultLevel],
                 messages = {},
@@ -560,8 +560,8 @@ function envoyFactory($http, $q) {
 
       delete $envoy._cache[form.$name];
 
-      if (broadcasting) {
-        return broadcasting.then($envoy.$broadcast.bind(null,
+      if ($envoy._broadcasting) {
+        return $envoy._broadcasting.then($envoy.$broadcast.bind(null,
           form,
           control));
       }
