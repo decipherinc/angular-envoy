@@ -343,7 +343,7 @@ var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined
   opts = require('./opts');
 
 var BROADCAST_DEBOUNCE_MS = 250,
-  debug = require('debug')('envoy:envoy:factory');
+  debug = require('debug')('envoy:$envoy:factory');
 
 function envoyFactory($http, $q) {
 
@@ -499,6 +499,10 @@ function envoyFactory($http, $q) {
           },
           defaultLevelNum);
 
+      debug('Computed errorLevel "%s" for form "%s"',
+        $envoy.level(maxLevel),
+        form.$name);
+
       return LEVEL_ARRAY[maxLevel];
     },
 
@@ -514,11 +518,10 @@ function envoyFactory($http, $q) {
             form.$name,
             control.$name);
 
-          hierarchy.unshift(parentForm);
-          while (parentForm.$$parentForm &&
-          parentForm.$$parentForm.$name) {
-            parentForm = parentForm.$$parentForm;
+          parentForm = parentForm.$$parentForm;
+          while (parentForm && parentForm.$name) {
             hierarchy.unshift(parentForm);
+            parentForm = parentForm.$$parentForm;
           }
 
           broadcasting = $q.all(_.map(hierarchy, $envoy))
@@ -656,7 +659,7 @@ module.exports = envoyFactory;
 var opts = require('./opts'),
   _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
 
-var debug = require('debug')('envoy:envoy:provider');
+var debug = require('debug')('envoy:$envoy:provider');
 
 function envoyProvider() {
 
