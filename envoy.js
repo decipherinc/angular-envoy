@@ -201,6 +201,8 @@ module.exports = MessagesCtrl;
 },{"./viewdata":8}],7:[function(require,module,exports){
 'use strict';
 
+var debug = require('debug')('envoy:directives:messages');
+
 /**
  * @ngdoc directive
  * @name fv.envoy.directive:envoyMessages
@@ -225,24 +227,32 @@ function messages($envoy) {
     scope: true,
     link: function link(scope, element, attrs, messages) {
       scope.$on('$formStateChanged', function (evt, data) {
-        var viewData = messages.$viewData;
+        var viewData = messages.$viewData,
+          errorLevel;
         if (!viewData) {
           return;
         }
+
+        errorLevel = data.errorLevel;
         viewData.messages = data.messages;
-        viewData.error = !!data.errorLevel;
+        viewData.error = !!errorLevel;
         viewData.className = data.errorLevelName;
-        viewData.title = $envoy.LEVELS[data.errorLevel].description;
+        viewData.title = $envoy.levelDescription(errorLevel);
+
+        debug('envoyMessages directive for form "%s" received ' +
+          '$formStateChanged event; view data:',
+          messages.$name,
+          viewData);
       });
     }
   };
-};
+}
 
 messages.$inject = ['$envoy'];
 
 module.exports = messages;
 
-},{"./messages-ctrl":6}],8:[function(require,module,exports){
+},{"./messages-ctrl":6,"debug":15}],8:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -298,7 +308,7 @@ function proxy($envoy) {
     require: 'ngModel',
     link: function (scope, element, attrs, ngModel) {
       var target;
-      if ((target = attrs.formProxy)) {
+      if ((target = attrs.envoyProxy)) {
         element.addClass('errorlevel');
 
         scope.$on('$formStateChanged', function (evt, data) {
@@ -318,7 +328,7 @@ function proxy($envoy) {
       }
     }
   };
-};
+}
 proxy.$inject = ['$envoy'];
 
 module.exports = proxy;
@@ -357,70 +367,72 @@ function envoyFactory($http, $q) {
      * expression which will be evaluated.
      * @type {Object.<string,Object.<string,string>>}
      */
-    actions = {};
+    actions = {},
 
-    /**
-     * Retrieves a collection of messages for a form and/or control
-     * within that form.  If no parameters, returns the entirety of the
-     * data file.
-     * @param {FormController} form Form controller
-     * @returns {*} Value, if any
-     */
-    function $envoy(form) {
-      var result;
-      if ((result = $envoy._cache[form.$name])) {
-        return $q.when(result);
-      }
-      return $http.get(opts.dataFile, {
-        cache: true
-      })
-        .then(function (res) {
+    prototype;
 
-          /**
-           * Entirety of the data file
-           * @type {Object}
-           */
-          var messages = res.data;
-
-          if (form) {
-            // If the form has an alias (use the "alias" directive),
-            // this name takes precedence.
-            messages = _(messages[form.$alias || form.$name])
-              // here we pick only the controls that are invalid.
-              .mapValues(function (controlMsgOptions, controlMsgName) {
-                var formControl = form[controlMsgName],
-                // if this is truthy, then we have errors in the given
-                // control
-                  error = formControl && _.size(formControl.$error);
-
-                if (formControl && error) {
-                  // get the problem tokens and grab any actions
-                  // if present.  actions are assigned at the control
-                  // level, but we don't have granular control over
-                  // which validation token triggers which action.
-                  // so, if there were two problems with one control,
-                  // both tokens would receive the action prop.
-                  return _(controlMsgOptions)
-                    .pick(_.keys(formControl.$error))
-                    .each(function (tokenInfo) {
-                      tokenInfo.action =
-                        $envoy.getAction(form.$name, controlMsgName);
-                    })
-                    .value();
-
-                }
-              })
-              .pick(_.identity)
-              .value();
-          }
-
-          $envoy._cache[form.$name] = messages;
-
-          return messages;
-        });
+  /**
+   * Retrieves a collection of messages for a form and/or control
+   * within that form.  If no parameters, returns the entirety of the
+   * data file.
+   * @param {FormController} form Form controller
+   * @returns {*} Value, if any
+   */
+  function $envoy(form) {
+    var result;
+    if ((result = $envoy._cache[form.$name])) {
+      return $q.when(result);
     }
+    return $http.get(opts.dataFile, {
+      cache: true
+    })
+      .then(function (res) {
 
-  var prototype = {
+        /**
+         * Entirety of the data file
+         * @type {Object}
+         */
+        var messages = res.data;
+
+        if (form) {
+          // If the form has an alias (use the "alias" directive),
+          // this name takes precedence.
+          messages = _(messages[form.$alias || form.$name])
+            // here we pick only the controls that are invalid.
+            .mapValues(function (controlMsgOptions, controlMsgName) {
+              var formControl = form[controlMsgName],
+              // if this is truthy, then we have errors in the given
+              // control
+                error = formControl && _.size(formControl.$error);
+
+              if (formControl && error) {
+                // get the problem tokens and grab any actions
+                // if present.  actions are assigned at the control
+                // level, but we don't have granular control over
+                // which validation token triggers which action.
+                // so, if there were two problems with one control,
+                // both tokens would receive the action prop.
+                return _(controlMsgOptions)
+                  .pick(_.keys(formControl.$error))
+                  .each(function (tokenInfo) {
+                    tokenInfo.action =
+                      $envoy.getAction(form.$name, controlMsgName);
+                  })
+                  .value();
+
+              }
+            })
+            .pick(_.identity)
+            .value();
+        }
+
+        $envoy._cache[form.$name] = messages;
+
+        return messages;
+      });
+  }
+
+  prototype = {
 
     _cache: {},
 
@@ -592,6 +604,11 @@ function envoyFactory($http, $q) {
         }
       }
       return envoyMessages;
+    },
+
+    levelDescription: function levelDescription(errorLevel) {
+      var level;
+      return (level = $envoy.LEVELS[errorLevel] && level.description);
     },
 
     /**
@@ -884,7 +901,8 @@ module.exports = formDecorator;
 
 var angular = (typeof window !== "undefined" ? window.angular : typeof global !== "undefined" ? global.angular : null),
   _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null),
-  directives = require('./directives');
+  directives = require('./directives'),
+  pkg = require('../package.json');
 
 var MODULE_NAME = 'fv.envoy',
   debug = require('debug')('envoy'),
@@ -892,7 +910,7 @@ var MODULE_NAME = 'fv.envoy',
 
 function config($provide) {
   $provide.decorator('ngFormDirective', require('./form-decorator'));
-  debug('Configured envoy');
+  debug('%s v%s ready', pkg.name, pkg.version);
 }
 config.$inject = ['$provide'];
 
@@ -909,7 +927,7 @@ module.exports = envoy;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./directives":3,"./envoy":11,"./form-decorator":13,"debug":15}],15:[function(require,module,exports){
+},{"../package.json":18,"./directives":3,"./envoy":11,"./form-decorator":13,"debug":15}],15:[function(require,module,exports){
 
 /**
  * This is the web browser implementation of `debug()`.
@@ -1403,6 +1421,53 @@ function plural(ms, n, name) {
   if (ms < n) return;
   if (ms < n * 1.5) return Math.floor(ms / n) + ' ' + name;
   return Math.ceil(ms / n) + ' ' + name + 's';
+}
+
+},{}],18:[function(require,module,exports){
+module.exports={
+  "name": "angular-envoy",
+  "version": "0.1.0",
+  "description": "Highly flexible form validation messaging for AngularJS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Christopher Hiller <chiller@focusvision.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "angular": "^1.4.1",
+    "browserify": "^10.2.4",
+    "chai": "^3.0.0",
+    "eslint": "^0.23.0",
+    "exorcist": "^0.4.0",
+    "exposify": "^0.4.3",
+    "grunt": "^0.4.5",
+    "grunt-browserify": "^3.8.0",
+    "grunt-bump": "^0.3.1",
+    "grunt-cli": "^0.1.13",
+    "grunt-contrib-clean": "^0.6.0",
+    "grunt-dev-update": "^1.3.0",
+    "grunt-eslint": "^15.0.0",
+    "grunt-exorcise": "^2.0.0",
+    "grunt-mocha-cov": "^0.4.0",
+    "grunt-ngdocs": "^0.2.7",
+    "jit-grunt": "^0.9.1",
+    "load-grunt-config": "^0.17.1",
+    "minifyify": "^7.0.1",
+    "minimatch": "^2.0.8",
+    "mocha": "^2.2.5",
+    "mocha-lcov-reporter": "0.0.2",
+    "through2": "^2.0.0",
+    "time-grunt": "^1.2.1",
+    "transformify": "^0.1.2"
+  },
+  "peerDependencies": {
+    "angular": "^1.4.1"
+  },
+  "dependencies": {
+    "debug": "^2.2.0",
+    "lodash": "^3.9.3"
+  }
 }
 
 },{}]},{},[1])
