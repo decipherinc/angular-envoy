@@ -3,3 +3,5 @@ bower_components/
 support/
 vendor/
 node_modules/
+./envoy.js
+./enjoy.min.js
