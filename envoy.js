@@ -102,6 +102,8 @@ module.exports = require('./messages');
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null),
   viewData = require('./viewdata');
 
+var debug = require('debug')('envoy:directives:messages:controller');
+
 function MessagesCtrl($element,
   $envoy,
   $attrs,
@@ -123,6 +125,26 @@ function MessagesCtrl($element,
     view.scope = scope;
     scope.data = viewData($envoy.DEFAULT_LEVEL);
     return this;
+  };
+
+  this.update = function update(data) {
+    var viewData = this.$viewData,
+      errorLevel;
+    if (!viewData) {
+      return;
+    }
+
+    errorLevel = data.errorLevel;
+    viewData.messages = data.messages;
+    viewData.error = !!errorLevel;
+    viewData.className = data.errorLevelName;
+    viewData.title = this.title(errorLevel);
+
+    debug('envoyMessages directive for form "%s" received ' +
+      '$formStateChanged event; view data:',
+      this.$name,
+      viewData);
+
   };
 
   /**
@@ -222,7 +244,7 @@ module.exports = MessagesCtrl;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./viewdata":8}],7:[function(require,module,exports){
+},{"./viewdata":8,"debug":15}],7:[function(require,module,exports){
 'use strict';
 
 var debug = require('debug')('envoy:directives:messages');
@@ -251,22 +273,7 @@ function messages() {
     scope: true,
     link: function link(scope, element, attrs, ctrl) {
       scope.$on('$formStateChanged', function (evt, data) {
-        var viewData = ctrl.$viewData,
-          errorLevel;
-        if (!viewData) {
-          return;
-        }
-
-        errorLevel = data.errorLevel;
-        viewData.messages = data.messages;
-        viewData.error = !!errorLevel;
-        viewData.className = data.errorLevelName;
-        viewData.title = ctrl.title(errorLevel);
-
-        debug('envoyMessages directive for form "%s" received ' +
-          '$formStateChanged event; view data:',
-          ctrl.$name,
-          viewData);
+        ctrl.update(data);
       });
 
       scope.$on('$destroy', function () {
@@ -550,7 +557,7 @@ function envoyFactory($http, $q) {
     },
     emit: function emit(form, control) {
       function findParents(ctrl, list) {
-        list = list || [];
+        list = list || [ctrl];
         if (ctrl.$parent) {
           list.push(ctrl.$parent);
           return findParents(ctrl.$parent, list);
@@ -613,15 +620,23 @@ function envoyFactory($http, $q) {
           control.$name);
 
         children.unshift(ctrl);
-        $envoy._emitting = $q.all([eventData(parents), eventData(children)])
-          .then(function (data) {
-            var parentData = data[0],
-              childData = data[1];
+        $envoy._emitting =
+          $q.all([eventData(parents), eventData(children), eventData([ctrl])])
+            .then(function (data) {
+              var parentData = data[0],
+                childData = data[1],
+                ctrlData = data[2];
 
-            ctrl.$scope.$parent.$emit('$formStateChanged', parentData);
-            ctrl.$scope.$broadcast('$formStateChanged', childData);
+              ctrl.$scope.$parent.$emit('$formStateChanged', parentData);
+              _(ctrl.$children)
+                .pluck('$scope')
+                .unique()
+                .each(function (scope) {
+                  scope.$broadcast('$formStateChanged', childData);
+                });
 
-          });
+              ctrl.update(ctrlData);
+            });
       }, BROADCAST_DEBOUNCE_MS);
 
       delete $envoy._cache[form.$name];
