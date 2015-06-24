@@ -203,6 +203,8 @@ function MessagesCtrl($element,
     view =
       this.$parent ? (this.$view = this.$parent.$view) : (this.$view = {});
 
+    this.$scope = $scope;
+
     $envoy.bindForm(this, this.$form);
 
   }.call(this));
@@ -538,8 +540,6 @@ function envoyFactory($http, $q) {
       return LEVEL_ARRAY[maxLevel];
     },
 
-    _lastControl: null,
-    _lastControlError: null,
     _emitting: null,
     bindForm: function bindForm(ctrl, form) {
       if (bindings[form.$name]) {
@@ -550,7 +550,7 @@ function envoyFactory($http, $q) {
     },
     emit: function emit(form, control) {
       function findParents(ctrl, list) {
-        list = list || [ctrl];
+        list = list || [];
         if (ctrl.$parent) {
           list.push(ctrl.$parent);
           return findParents(ctrl.$parent, list);
@@ -572,18 +572,8 @@ function envoyFactory($http, $q) {
           .value();
       }
 
-
-      var emit = _.debounce(function emit() {
-        var ctrl = bindings[form.$name],
-          parents = findParents(ctrl),
-          children = findChildren(ctrl),
-          ctrls = _.unique(parents.concat(children));
-
-        debug('Emitting from form "%s"; "%s" changed',
-          form.$name,
-          control.$name);
-
-        $envoy._emitting = $q.all(_.map(ctrls, function (ctrl) {
+      function eventData(ctrls) {
+        return $q.all(_.map(ctrls, function (ctrl) {
           return $envoy(ctrl.$form);
         }))
           .then(function (pileOfMessages) {
@@ -605,18 +595,32 @@ function envoyFactory($http, $q) {
                 },
                 defaultLevel);
 
-            form.$formScope.$emit('$formStateChanged',
-              {
-                errorLevel: maxErrorLevel,
-                errorLevelName: LEVEL_ARRAY[maxErrorLevel],
-                messages: _.omit(messages, _.isEmpty),
-                control: control
-              });
-
-            $envoy._lastControl = control;
-            $envoy._lastControlError = _.keys(control.$error);
+            return {
+              errorLevel: maxErrorLevel,
+              errorLevelName: LEVEL_ARRAY[maxErrorLevel],
+              messages: _.omit(messages, _.isEmpty)
+            };
           });
+      }
 
+      var emit = _.debounce(function emit() {
+        var ctrl = bindings[form.$name],
+          parents = findParents(ctrl),
+          children = findChildren(ctrl);
+
+        debug('Emitting from form "%s"; "%s" changed',
+          form.$name,
+          control.$name);
+
+        $envoy._emitting = $q.all([eventData(parents), eventData(children)])
+          .then(function (data) {
+            var parentData = data[0],
+              childData = data[1];
+
+            ctrl.$scope.$parent.$emit('$formStateChanged', parentData);
+            ctrl.$scope.$broadcast('$formStateChanged', childData);
+
+          });
       }, BROADCAST_DEBOUNCE_MS);
 
       delete $envoy._cache[form.$name];
