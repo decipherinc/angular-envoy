@@ -612,6 +612,7 @@ function envoyFactory($http, $q) {
           form.$name,
           control.$name);
 
+        children.unshift(ctrl);
         $envoy._emitting = $q.all([eventData(parents), eventData(children)])
           .then(function (data) {
             var parentData = data[0],
