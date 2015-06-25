@@ -1,6 +1,5 @@
 build:
   - browserify
-  - exorcise
 
 test:
   - eslint

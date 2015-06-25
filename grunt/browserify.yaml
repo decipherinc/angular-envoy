@@ -5,13 +5,13 @@ options:
      * Copyright (c) <%= grunt.template.today('yyyy') %> Focusvision Worldwide; Licensed <%= pkg.license %>
      */
 
-  browserifyOptions:
-    debug: true
 
 main:
   files:
     <%= bower.main %>: index.js
   options:
+    browserifyOptions:
+      debug: true
     transform:
       -
         - exposify
@@ -31,10 +31,11 @@ min:
           expose:
             angular: angular
             lodash: _
-
-    plugin:
       -
-        - minifyify
+        - uglifyify
         -
-          map: <%= min(bower.main) %>.map
-          output: <%= min(bower.main) %>.map
+          global: true
+      -
+        - jsonminifyify
+        -
+          files: package.json
