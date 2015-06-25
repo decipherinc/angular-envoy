@@ -28,9 +28,9 @@ function action($envoy) {
     restrict: 'A',
     require: ['ngModel', '^form'],
     link: function (scope, element, attrs, ctrls) {
-      var ngModel = ctrls[0],
-        form = ctrls[1],
-        action;
+      var ngModel = ctrls[0];
+      var form = ctrls[1];
+      var action;
 
       if ((action = attrs.messageAction) && ngModel.$name && form.$name) {
         $envoy.setAction(form.$name, ngModel.$name, function () {
@@ -99,8 +99,8 @@ module.exports = require('./messages');
 (function (global){
 'use strict';
 
-var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null),
-  viewData = require('./viewdata');
+var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
+var viewData = require('./viewdata');
 
 var debug = require('debug')('envoy:directives:messages:controller');
 
@@ -124,27 +124,49 @@ function MessagesCtrl($element,
     }
     view.scope = scope;
     scope.data = viewData($envoy.DEFAULT_LEVEL);
+    debug('View bound');
     return this;
   };
 
   this.update = function update(data) {
-    var viewData = this.$viewData,
-      errorLevel;
-    if (!viewData) {
-      return;
+    var viewData = this.$viewData;
+    var errorLevel;
+
+    if (viewData) {
+
+      debug('"%s" updating with new data:', this.$name, data);
+
+      this.$errorLevel =
+        errorLevel =
+          _.isNumber(data.errorLevel) ? data.errorLevel : this.$errorLevel;
+
+      // this beast is kind of a custom merge
+      _.each(data.messages, function (formMessages, formName) {
+        if (viewData.messages[formName]) {
+          _.each(formMessages, function (controlMessages, controlName) {
+            if (_.isObject(controlMessages)) {
+              if (viewData.messages[formName][controlName]) {
+                _.extend(viewData.messages[formName][controlName],
+                  controlMessages);
+              } else {
+                viewData.messages[formName][controlName] = controlMessages;
+              }
+            } else {
+              delete viewData.messages[formName][controlName];
+            }
+          });
+        } else {
+          viewData.messages[formName] = formMessages;
+        }
+      });
+      viewData.error = !!errorLevel;
+      viewData.className = $envoy.level(errorLevel);
+      viewData.title = this.title(errorLevel);
+
+      debug('"%s" updated; view data:', this.$name, viewData);
+
+      return viewData;
     }
-
-    errorLevel = data.errorLevel;
-    viewData.messages = data.messages;
-    viewData.error = !!errorLevel;
-    viewData.className = data.errorLevelName;
-    viewData.title = this.title(errorLevel);
-
-    debug('envoyMessages directive for form "%s" received ' +
-      '$formStateChanged event; view data:',
-      this.$name,
-      viewData);
-
   };
 
   /**
@@ -153,16 +175,20 @@ function MessagesCtrl($element,
    */
   this.unbindView = function unbindView() {
     delete view.scope;
+    view = null;
+    debug('View unbound');
     return this;
   };
 
   this.addChild = function addChild(child) {
-    this.$children = (this.$children || []).push(child);
+    debug('Adding child "%s" to "%s"', child.$name, this.$name);
+    this.$children.push(child);
     child.$parent = this;
     return this;
   };
 
   this.removeChild = function removeChild(child) {
+    debug('Removing child "%s" from "%s"', child.$name, this.$name);
     this.$children.splice(this.$children.indexOf(child), 1);
     delete child.$parent;
     return this;
@@ -172,11 +198,19 @@ function MessagesCtrl($element,
     return $envoy.levelDescription(errorLevel);
   };
 
+  this.toString = function toString() {
+    return this.$name;
+  };
+
+  this.broadcast = $scope.$broadcast.bind($scope);
+  this.emit = $scope.$parent.$emit.bind($scope.$parent);
+
   /**
    * @this MessagesCtrl
    */
   (function init() {
-    var parentName, form;
+    var parentName;
+    var form;
 
     this.$children = [];
     this.$parent = null;
@@ -201,7 +235,7 @@ function MessagesCtrl($element,
           if ((data = _.get(view, 'scope.data'))) {
             return data;
           }
-          if (_.get(view, 'scope')) {
+          if (view.scope) {
             return (view.scope.data = viewData($envoy.DEFAULT_LEVEL));
           }
         },
@@ -219,15 +253,16 @@ function MessagesCtrl($element,
 
       if (this.$parent.$form === form) {
         this.$parent.removeChild(this);
+        debug('Attempted to initialize %s with its own parent', form.$name);
       }
     }
+
+    this.$children = [];
 
     view =
       this.$parent ? (this.$view = this.$parent.$view) : (this.$view = {});
 
-    this.$scope = $scope;
-
-    $envoy.bindForm(this, this.$form);
+    $scope.$on('$destroy', $envoy.bindForm(this, this.$name));
 
   }.call(this));
 }
@@ -246,8 +281,6 @@ module.exports = MessagesCtrl;
 
 },{"./viewdata":8,"debug":15}],7:[function(require,module,exports){
 'use strict';
-
-var debug = require('debug')('envoy:directives:messages');
 
 /**
  * @ngdoc directive
@@ -287,14 +320,14 @@ messages.$inject = ['$envoy'];
 
 module.exports = messages;
 
-},{"./messages-ctrl":6,"debug":15}],8:[function(require,module,exports){
+},{"./messages-ctrl":6}],8:[function(require,module,exports){
 (function (global){
 'use strict';
 
 var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
 
-var ID_PREFIX = 'envoy-viewdata-',
-  debug = require('debug')('envoy:directives:messages:viewdata');
+var ID_PREFIX = 'envoy-viewdata-';
+var debug = require('debug')('envoy:directives:messages:viewdata');
 
 function viewData(defaultLevel) {
   var data = {
@@ -330,7 +363,7 @@ var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined
  * of the associated NgModelController, based on the validity of the target
  * form.
  */
-function proxy($envoy) {
+function proxy() {
 
   /**
    * Anything that needs validating needs a token, so, here's one.
@@ -338,47 +371,68 @@ function proxy($envoy) {
    */
   var TOKEN = 'proxy';
 
+  /**
+   * The class to be applied if the directive's value is present
+   * @type {string}
+   */
+  var CLASSNAME = 'errorlevel';
+
   return {
     restrict: 'A',
     require: 'ngModel',
-    link: function (scope, element, attrs, ngModel) {
-      var target;
-      if ((target = attrs.envoyProxy)) {
-        element.addClass('errorlevel');
+    controller: [
+      '$scope',
+      '$element',
+      '$attrs',
+      '$envoy',
+      '$interpolate',
+      function ProxyCtrl($scope, $element, $attrs, $envoy, $interpolate) {
 
-        scope.$on('$formStateChanged', function (evt, data) {
-          var isInvalid;
-          //if (_.find(data.forms, { $name: target })) {
-            _.each($envoy.ERRORLEVELS,
-              function (errorlevel, errorLevelName) {
-                element.removeClass(errorLevelName);
-              });
-            isInvalid = data.errorLevel;
-            ngModel.$setValidity(TOKEN, isInvalid);
-            if (isInvalid) {
-              element.addClass(data.errorLevelName);
-            }
-          //}
-        });
+        var debug = require('debug')('envoy:directives:proxy:controller');
+        var target = $interpolate($attrs.envoyProxy || '')($scope);
+        var ngModel = $element.controller('ngModel');
+
+        this.update = function update(data) {
+          var isValid = !data.errorLevel;
+          var errorLevelName = $envoy.level(data.errorLevel);
+          debug('Proxy "%s" updated w/ errorLevel %s', target, errorLevelName);
+          _.each($envoy.ERRORLEVELS, function (errorlevel, errorLevelName) {
+            $element.removeClass(errorLevelName);
+          });
+          ngModel.$setValidity(TOKEN, isValid);
+          if (!isValid) {
+            $element.addClass(errorLevelName);
+          }
+        };
+
+        this.toString = function toString() {
+          return this.$name + '-proxy';
+        };
+
+        this.$name = target;
+
+        if (target) {
+          $element.addClass(CLASSNAME);
+          $scope.$on('$destroy', $envoy.bindForm(this, target));
+        } else {
+          throw new Error('envoyProxy directive needs a value!');
+        }
       }
-    }
+    ]
   };
 }
-proxy.$inject = ['$envoy'];
-
 module.exports = proxy;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{}],10:[function(require,module,exports){
+},{"debug":15}],10:[function(require,module,exports){
 (function (global){
 'use strict';
 
-var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null),
-  opts = require('./opts');
+var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
+var opts = require('./opts');
 
-var BROADCAST_DEBOUNCE_MS = 250,
-  debug = require('debug')('envoy:$envoy:factory');
+var debug = require('debug')('envoy:$envoy:factory');
 
 function envoyFactory($http, $q) {
 
@@ -386,32 +440,32 @@ function envoyFactory($http, $q) {
    * Error levels as configured in opts in order, by name
    * @type {Array.<string>}
    */
-  var LEVEL_ARRAY = _.pluck(opts.levels, 'name'),
+  var LEVEL_ARRAY = _.pluck(opts.levels, 'name');
 
-    /**
-     * Mapping of error level names to indices in {@link LEVEL_ARRAY}
-     * @type {Object.<string,number>}
-     */
-    LEVELS = _(LEVEL_ARRAY)
-      .invert()
-      .mapValues(_.parseInt)
-      .value(),
+  /**
+   * Mapping of error level names to indices in {@link LEVEL_ARRAY}
+   * @type {Object.<string,number>}
+   */
+  var LEVELS = _(LEVEL_ARRAY)
+    .invert()
+    .mapValues(_.parseInt)
+    .value();
 
-    /**
-     * Lookup of forms and controls to any actions bound via the
-     * messageAction directive.  An action is simply an AngularJS
-     * expression which will be evaluated.
-     * @type {Object.<string,Object.<string,string>>}
-     */
-    actions = {},
+  /**
+   * Lookup of forms and controls to any actions bound via the
+   * messageAction directive.  An action is simply an AngularJS
+   * expression which will be evaluated.
+   * @type {Object.<string,Object.<string,string>>}
+   */
+  var actions = {};
 
-    /**
-     * Map of form name to MessagesCtrl bindings
-     * @type {Object.<string,MessagesCtrl>}
-     */
-    bindings = {},
+  /**
+   * Map of form name to MessagesCtrl bindings
+   * @type {Object.<string,MessagesCtrl>}
+   */
+  var bindings = {};
 
-    prototype;
+  var prototype;
 
   /**
    * Retrieves a collection of messages for a form and/or control
@@ -442,10 +496,10 @@ function envoyFactory($http, $q) {
           messages = _(messages[form.$alias || form.$name])
             // here we pick only the controls that are invalid.
             .mapValues(function (controlMsgOptions, controlMsgName) {
-              var formControl = form[controlMsgName],
+              var formControl = form[controlMsgName];
               // if this is truthy, then we have errors in the given
               // control
-                error = formControl && _.size(formControl.$error);
+              var error = formControl && _.size(formControl.$error);
 
               if (formControl && error) {
                 // get the problem tokens and grab any actions
@@ -464,7 +518,6 @@ function envoyFactory($http, $q) {
 
               }
             })
-            .pick(_.identity)
             .value();
         }
 
@@ -513,51 +566,57 @@ function envoyFactory($http, $q) {
        * Index of the default error level
        * @type {number}
        */
-      var defaultLevelNum = LEVELS[opts.defaultLevel],
+      var defaultLevelNum = LEVELS[opts.defaultLevel];
 
-        /**
-         * Maximum error level of all validation tokens within all
-         * controls of this form
-         * @type {number}
-         */
-        maxLevel = _.reduce(formMessages,
-          function (result, controlMsgOpts) {
+      /**
+       * Maximum error level of all validation tokens within all
+       * controls of this form
+       * @type {number}
+       */
+      var maxLevel = _.reduce(formMessages,
+        function (result, controlMsgOpts) {
 
-            /**
-             * Maximum error level of any validation token within
-             * the control which is in "invalid" state.
-             * @type {number}
-             */
-            var maxControlLevel = _(controlMsgOpts)
-              .pick(function (tokenOpts, tokenName) {
-                return form.$error[tokenName];
-              })
-              .pluck('level')
-              .map($envoy.level)
-              .max();
+          /**
+           * Maximum error level of any validation token within
+           * the control which is in "invalid" state.
+           * @type {number}
+           */
+          var maxControlLevel = _(controlMsgOpts)
+            .pick(function (tokenOpts, tokenName) {
+              return form.$error[tokenName];
+            })
+            .pluck('level')
+            .map($envoy.level)
+            .max();
 
-            return Math.max(result, maxControlLevel);
-          },
-          defaultLevelNum);
+          return Math.max(result, maxControlLevel);
+        },
+        defaultLevelNum);
 
+      var errorLevelName = $envoy.level(maxLevel);
       debug('Computed errorLevel "%s" for form "%s"',
-        $envoy.level(maxLevel),
+        errorLevelName,
         form.$name);
-
-      return LEVEL_ARRAY[maxLevel];
+      return maxLevel;
     },
 
     _emitting: null,
-    bindForm: function bindForm(ctrl, form) {
-      if (bindings[form.$name]) {
-        throw new Error('Form "' + form.$name +
-          '" already bound!  One envoyMessages directive per form, please.');
-      }
-      bindings[form.$name] = ctrl;
+    bindForm: function bindForm(ctrl, formName) {
+
+      var formBindings = bindings[formName] = bindings[formName] || {};
+      var id = _.uniqueId('envoy-binding-');
+
+      formBindings[id] = ctrl;
+
+      return function unbindForm() {
+        delete formBindings[id];
+      };
     },
     emit: function emit(form, control) {
+      var _emit;
+
       function findParents(ctrl, list) {
-        list = list || [ctrl];
+        list = list || [];
         if (ctrl.$parent) {
           list.push(ctrl.$parent);
           return findParents(ctrl.$parent, list);
@@ -565,90 +624,163 @@ function envoyFactory($http, $q) {
         return list;
       }
 
+      /**
+       * For a MessageCtrl, find all children (recursively).
+       * @param {MessageCtrl} ctrl envoyMessage Controller
+       * @param {Array.<MessageCtrl>} [list=[]] Array of children
+       * @returns {Array.<MessageCtrl>} Array of children
+       */
       function findChildren(ctrl, list) {
+        var children = ctrl.$children;
         list = list || [];
-        if (ctrl.$children.length) {
-          list.push.apply(list, ctrl.$children);
-          return _.map(ctrl.$children, function (child) {
-            return findChildren(child, list);
-          });
+        if (children && children.length) {
+          list.push.apply(list, children);
+          return _(children)
+            .map(function (child) {
+              return findChildren(child, list);
+            })
+            .flatten()
+            .unique()
+            .value();
         }
-        return _(list)
-          .flatten()
-          .unique()
-          .value();
+        return list;
       }
 
-      function eventData(ctrls) {
-        return $q.all(_.map(ctrls, function (ctrl) {
-          return $envoy(ctrl.$form);
-        }))
-          .then(function (pileOfMessages) {
-            var defaultLevel = LEVELS[opts.defaultLevel],
-              messages = {},
-              maxErrorLevel = _.reduce(pileOfMessages,
-                function (result, formMessages, idx) {
-                  var form = ctrls[idx].$form,
-                    errorLevelName = $envoy._formErrorLevel(form,
-                      formMessages),
-                    errorLevel = LEVELS[errorLevelName];
-
-                  form.$errorLevel = errorLevel;
-                  messages[form.$name] = formMessages;
-                  return _.isNumber(errorLevel) ?
-                    Math.max(result,
-                      errorLevel) :
-                    result;
-                },
-                defaultLevel);
-
-            return {
-              errorLevel: maxErrorLevel,
-              errorLevelName: LEVEL_ARRAY[maxErrorLevel],
-              messages: _.omit(messages, _.isEmpty)
-            };
+      /**
+       * Given some controllers, set the default errorLevel if it doesn't
+       * exist.
+       * @param {...Array.<(MessageCtrl|ProxyCtrl)>} [ctrls] Arrays of
+       *     controllers
+       */
+      function setDefaultCtrlLevels() {
+        _.each(_.toArray(arguments), function (ctrls) {
+          _.each(ctrls, function (ctrl) {
+            ctrl.$errorLevel = ctrl.$errorLevel || $envoy.DEFAULT_ERRORLEVEL;
           });
+        });
       }
 
-      var emit = _.debounce(function emit() {
-        var ctrl = bindings[form.$name],
-          parents = findParents(ctrl),
-          children = findChildren(ctrl);
+      _emit = _.debounce(function _emit(form, control) {
 
-        debug('Emitting from form "%s"; "%s" changed',
-          form.$name,
-          control.$name);
+        /**
+         * All controllers that care about this form, be it envoyMessage
+         * controllers, or envoyProxy controllers.
+         * @type {Array.<(MessageCtrl|ProxyCtrl)>}
+         */
+        var boundCtrls = _.toArray(bindings[form.$name]);
 
-        children.unshift(ctrl);
-        $envoy._emitting =
-          $q.all([eventData(parents), eventData(children), eventData([ctrl])])
-            .then(function (data) {
-              var parentData = data[0],
-                childData = data[1],
-                ctrlData = data[2];
+        /**
+         * Those of the bound controls which are envoyMessage controllers.
+         * These have actual form objects within them, so we'll use them
+         * to determine the appropriate errorlevel(s).
+         * @type {Array.<MessageCtrl>}
+         */
+        var messageCtrls;
 
-              ctrl.$scope.$parent.$emit('$formStateChanged', parentData);
-              _(ctrl.$children)
-                .pluck('$scope')
-                .unique()
-                .each(function (scope) {
-                  scope.$broadcast('$formStateChanged', childData);
-                });
+        /**
+         * All parent controllers of the messageCtrls.
+         * @type {Array.<MessageCtrl>}
+         */
+        var parentCtrls;
 
-              ctrl.update(ctrlData);
+        if (!boundCtrls.length) {
+          // nobody cares.
+          return;
+        }
+
+        messageCtrls = _.filter(boundCtrls, function (ctrl) {
+          return ctrl.$form;
+        });
+
+        parentCtrls = _(messageCtrls)
+          .map(function (child) {
+            return findParents(child);
+          })
+          .flatten()
+          .value();
+
+        // for those which don't have an $errorLevel prop set, set it.
+        setDefaultCtrlLevels(parentCtrls, messageCtrls);
+
+        $envoy._emitting = $envoy(form)
+          .then(function (formMessages) {
+            var lastErrorLevel = $envoy._formErrorLevel(form,
+              formMessages);
+            var messages = _.object([form.$name], [formMessages]);
+            var increasing;
+
+            function update(ctrl) {
+              ctrl.update({
+                messages: messages,
+                errorLevel: lastErrorLevel
+              });
+            }
+
+            if (form.$errorLevel < lastErrorLevel) {
+              increasing = true;
+            } else if (form.$errorLevel > lastErrorLevel) {
+              increasing = false;
+            } else {
+              return;
+            }
+
+            _.each(formMessages[control.$name], function (tokenInfo) {
+              tokenInfo.action = $envoy.getAction(form.$name, control.$name);
             });
-      }, BROADCAST_DEBOUNCE_MS);
+
+            if (increasing === false) {
+              lastErrorLevel = Math.max(lastErrorLevel,
+                _(messageCtrls)
+                  .map(function (ctrl) {
+                    return findChildren(ctrl);
+                  })
+                  .flatten()
+                  .map(function (childCtrl) {
+                    return _.isNumber(childCtrl.$errorLevel) ?
+                      childCtrl.$errorLevel :
+                      $envoy.DEFAULT_ERRORLEVEL;
+                  })
+                  .max());
+            }
+
+            _.each(boundCtrls, update);
+
+            _.each(parentCtrls, function (ctrl) {
+              if (increasing) {
+                if (ctrl.$errorLevel < lastErrorLevel) {
+                  update(ctrl);
+                } else if (ctrl.$errorLevel > lastErrorLevel) {
+                  lastErrorLevel = ctrl.$errorLevel;
+                  update(ctrl);
+                }
+              } else {
+                if (ctrl.$errorLevel > lastErrorLevel) {
+                  update(ctrl);
+                } else if (ctrl.$errorLevel < lastErrorLevel) {
+                  lastErrorLevel = ctrl.$errorLevel;
+                  update(ctrl);
+                }
+              }
+            });
+          })
+          .catch(function (err) {
+            debug(err);
+          });
+      });
 
       delete $envoy._cache[form.$name];
 
+      debug('Control "%s" in form "%s" changed validity',
+        control.$name,
+        form.$name);
+
       if ($envoy._emitting) {
-        return $envoy._emitting.then(emit.bind(null,
+        return $envoy._emitting.then(_emit.bind(null,
           form,
           control));
       }
 
-      return $q.when(emit());
-
+      return $q.when(_emit(form, control));
     },
 
     /**
@@ -695,8 +827,7 @@ function envoyFactory($http, $q) {
     },
 
     levelDescription: function levelDescription(errorLevel) {
-      var level;
-      return ((level = $envoy.LEVELS[errorLevel]) && level.description);
+      return opts.levels[errorLevel].description;
     },
 
     /**
@@ -704,6 +835,8 @@ function envoyFactory($http, $q) {
      * @type {string}
      */
     DEFAULT_LEVEL: opts.defaultLevel,
+
+    DEFAULT_ERRORLEVEL: LEVELS[opts.defaultLevel],
 
     /**
      * Exposed for handiness.  The kinder, gentler version of
@@ -736,8 +869,8 @@ module.exports = envoyFactory;
 (function (global){
 'use strict';
 
-var opts = require('./opts'),
-  _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
+var opts = require('./opts');
+var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
 
 var debug = require('debug')('envoy:$envoy:provider');
 
@@ -770,38 +903,38 @@ module.exports = envoyProvider;
  * hide any display generated by the `messagesList` directive.
  * @type {number}
  */
-var DEFAULT_HIDE_DELAY = 900,
+var DEFAULT_HIDE_DELAY = 900;
 
-  /**
-   * Default level and descriptions
-   * @type {Array.<Object.<string, string>>}
-   */
-  DEFAULT_LEVELS = [
-    {
-      name: 'ok',
-      description: 'Fixed!'
-    },
-    {
-      name: 'warning',
-      description: 'Warning'
-    },
-    {
-      name: 'error',
-      description: 'Error'
-    }
-  ],
+/**
+ * Default level and descriptions
+ * @type {Array.<Object.<string, string>>}
+ */
+var DEFAULT_LEVELS = [
+  {
+    name: 'ok',
+    description: 'Fixed!'
+  },
+  {
+    name: 'warning',
+    description: 'Warning'
+  },
+  {
+    name: 'error',
+    description: 'Error'
+  }
+];
 
-  /**
-   * Default web server path to JSON message definition file
-   * @type {string}
-   */
-  DEFAULT_DATA_FILE = 'messages.json',
+/**
+ * Default web server path to JSON message definition file
+ * @type {string}
+ */
+var DEFAULT_DATA_FILE = 'messages.json';
 
-  /**
-   * The default level
-   * @type {string}
-   */
-  DEFAULT_LEVEL = 'ok';
+/**
+ * The default level
+ * @type {string}
+ */
+var DEFAULT_LEVEL = 'ok';
 
 module.exports = {
   levels: DEFAULT_LEVELS,
@@ -834,13 +967,13 @@ function formDecorator($delegate) {
    * The real form directive.
    * @type {form}
    */
-  var form = _.first($delegate),
+  var form = _.first($delegate);
 
-    /**
-     * Original FormController.
-     * @type {form.FormController}
-     */
-    formController = form.controller;
+  /**
+   * Original FormController.
+   * @type {form.FormController}
+   */
+  var formController = form.controller;
 
   /**
    * We're monkeypatching FormController with this, if and only if
@@ -927,14 +1060,14 @@ function formDecorator($delegate) {
            * @todo maybe we do care?
            * @type {boolean}
            */
-          var isNotForm = !control.$isForm,
+          var isNotForm = !control.$isForm;
 
-            /**
-             * We only care about controls that were explicitly added
-             * to this form.
-             * @type {boolean}
-             */
-            formHasControl = isNotForm && _.has(this, control.$name);
+          /**
+           * We only care about controls that were explicitly added
+           * to this form.
+           * @type {boolean}
+           */
+          var formHasControl = isNotForm && _.has(this, control.$name);
 
           $setValidity.apply(this, arguments);
 
@@ -952,6 +1085,7 @@ function formDecorator($delegate) {
       }
     }
   }
+
   MessagesFormController.$inject = [
     '$element',
     '$attrs',
@@ -988,14 +1122,14 @@ module.exports = formDecorator;
 (function (global){
 'use strict';
 
-var angular = (typeof window !== "undefined" ? window.angular : typeof global !== "undefined" ? global.angular : null),
-  _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null),
-  directives = require('./directives'),
-  pkg = require('../package.json');
+var angular = (typeof window !== "undefined" ? window.angular : typeof global !== "undefined" ? global.angular : null);
+var _ = (typeof window !== "undefined" ? window._ : typeof global !== "undefined" ? global._ : null);
+var directives = require('./directives');
+var pkg = require('../package.json');
 
-var MODULE_NAME = 'fv.envoy',
-  debug = require('debug')('envoy'),
-  envoy;
+var MODULE_NAME = 'fv.envoy';
+var debug = require('debug')('envoy');
+var envoy;
 
 function config($provide) {
   $provide.decorator('ngFormDirective', require('./form-decorator'));
