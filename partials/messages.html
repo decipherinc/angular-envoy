@@ -3,11 +3,13 @@
   <legend>{{ data.title }}</legend>
   <div data-ng-repeat="(formName, formMessages) in data.messages">
     <ul class="fa-ul" data-ng-repeat="(fieldName, field) in formMessages">
-      <li data-ng-repeat="(token, info) in field" class="{{ info.level }}" data-ng-click="info.action()" data-ng-class="{actionable: info.action}">
+      <li data-ng-repeat="(token, info) in field" class="{{ info.level }}"
+          data-ng-click="info.action()"
+          data-ng-class="{actionable: info.action}">
         <i class="fa-li fa"
            data-ng-class="{'fa-exclamation-triangle': info.level == 'error', 'fa-exclamation': info.level == 'warning', 'fa-check': info.level == 'ok'}"></i>
-        {{ info.message }}
-        <i class="fa fa-arrow-circle-right" data-ng-show="info.action"></i>
+        <a data-ng-show="info.action">{{ info.message }}</a> <span
+        data-ng-hide="info.action">{{ info.message }}</span>
       </li>
     </ul>
   </div>
