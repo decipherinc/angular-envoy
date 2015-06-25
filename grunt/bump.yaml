@@ -1,15 +1,14 @@
 options:
   files:
     - package.json
-    - bower.json
   updateConfigs:
     - pkg
   commit: true
   commitMessage: Release v%VERSION%
   commitFiles:
     - package.json
-    - bower.json
-    - ./dist/*
+    - envoy.js
+    - envoy.min.js
   createTag: true
   tagName: v%VERSION%
   tagMessage: Version %VERSION%
