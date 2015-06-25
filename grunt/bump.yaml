@@ -6,9 +6,9 @@ options:
   commit: true
   commitMessage: Release v%VERSION%
   commitFiles:
-    - package.json
-    - envoy.js
-    - envoy.min.js
+    - ./package.json
+    - ./envoy*.js
+    - ./envoy*.map
   createTag: true
   tagName: v%VERSION%
   tagMessage: Version %VERSION%
