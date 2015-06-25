@@ -22,7 +22,9 @@
     "Gruntfile.js",
     "*.map",
     "lib",
-    "index.js"
+    "index.js",
+    "docs",
+    "ngdocs-assets"
   ],
   "dependencies": {
     "lodash": ">=3.0.0",

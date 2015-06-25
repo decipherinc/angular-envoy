@@ -1,0 +1,18 @@
+---
+  options:
+    dest: docs
+    scripts:
+      - ./bower_components/lodash/lodash.js
+      - ./bower_components/angular/angular.js
+      - ./envoy.min.js
+    html5Mode: false
+    startPage: '#/api/fv.envoy'
+    title: angular-envoy
+    image: ./ngdocs-assets/fv-logo.png
+    imageLink: http://www.focusvision.com
+    titleLink: '#/api/fv.envoy'
+    bestMatch: true
+  api:
+    src:
+      - lib/**/*.js
+    title: API Documentation
