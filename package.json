@@ -1,6 +1,6 @@
 {
   "name": "angular-envoy",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "description": "Highly flexible form validation messaging for AngularJS",
   "main": "index.js",
   "author": "Christopher Hiller <chiller@focusvision.com>",
