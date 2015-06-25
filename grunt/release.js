@@ -3,8 +3,8 @@
 module.exports = function (grunt) {
 
   grunt.registerTask('release', 'Build & bump', function(target) {
-    grunt.run('bump-only:' + target);
-    grunt.run('build');
-    grunt.run('bump-commit');
+    grunt.task.run('bump-only:' + target);
+    grunt.task.run('build');
+    grunt.task.run('bump-commit');
   });
 };
