@@ -1,16 +1,26 @@
 NG_DOCS={
   "sections": {
+    "home": "Overview",
     "api": "API Documentation"
   },
   "pages": [
+    {
+      "section": "home",
+      "id": "index",
+      "shortName": "Overview",
+      "type": "overview",
+      "moduleName": "Overview",
+      "shortDescription": "envoy",
+      "keywords": "$envoyprovider aliases allow alternative angular angular-envoy angularjs api appears attribute author avoid basic basis bower browserify business button cached change characters child clicks complexity config configurable control controls cooperate cycles damn datafileurl debounce define dependencies development digest directive directives disable display displayed documentation dom don dynamic dynamically easily enable envoy envoy-messages err error errorlevels errors example execute expression external features field fields file firstname flexible form formcontroller forms front-end fv generated github guest hardcode highlight highly hiller hooks html https included indicate indicated input install installation invalid io item items javascript js json lastname leaves level license list loops lot message messages messaging minlength mit module myform mymodule names naughty nested nevermind ng-model ngif ngmessages ngmodeloptions ngshow ngswitch npm npmjs offered options org organized overview parent partials per-field place plain-jane pretty problem production provide proxies relevant remain required retrieval save scope short simply storage store submission submit support template templateurl text things todo tokens type ui-router uncessary updated usage user user-defined usual v2 v3 v4 validation validity values view views warning warnings watches won"
+    },
     {
       "section": "api",
       "id": "fv.envoy",
       "shortName": "fv.envoy",
       "type": "overview",
       "moduleName": "fv.envoy",
-      "shortDescription": "Provides form messaging functionality along the lines of ngMessages, but with more stuff.",
-      "keywords": "api envoy form functionality fv lines messaging ngmessages overview stuff"
+      "shortDescription": "",
+      "keywords": "api envoy fv overview"
     },
     {
       "section": "api",
@@ -23,11 +33,12 @@ NG_DOCS={
     },
     {
       "section": "api",
-      "id": "fv.envoy.directive:envoyList\nDefines a directive which will display a list of all messages\nfor a form.\n\nThe template for the list is the property `templateUrl` of\n$envoyProvider.\n\nMust have an `envoyMessages` ancestor.",
-      "name": "fv.envoy.directive:envoyList\nDefines a directive which will display a list of all messages\nfor a form.\n\nThe template for the list is the property `templateUrl` of\n$envoyProvider.\n\nMust have an `envoyMessages` ancestor.",
-      "shortName": "envoyList\nDefines a directive which will display a list of all messages\nfor a form.\n\nThe template for the list is the property `templateUrl` of\n$envoyProvider.\n\nMust have an `envoyMessages` ancestor.",
+      "id": "fv.envoy.directive:envoyList",
+      "shortName": "envoyList",
       "type": "directive",
-      "keywords": "$envoyprovider ancestor api configform defines directive display envoy envoy-list envoymessages form fv html list messages property template templateurl"
+      "moduleName": "fv.envoy",
+      "shortDescription": "Defines a directive which will display a list of all messages",
+      "keywords": "$envoyprovider ancestor api attribute configform defines directive display envoy envoy-list envoylist envoymessages form fv html interpolation list messages property target template templateurl"
     },
     {
       "section": "api",
@@ -58,11 +69,12 @@ NG_DOCS={
     }
   ],
   "apis": {
+    "home": false,
     "api": true
   },
   "html5Mode": false,
-  "editExample": true,
-  "startPage": "#/api/fv.envoy",
+  "editExample": false,
+  "startPage": "overview",
   "scripts": [
     "lodash.js",
     "angular.js",

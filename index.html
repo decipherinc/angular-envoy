@@ -18,7 +18,7 @@
     // before the base attribute is added, causing 404 and terribly slow loading of the docs app.
     (function() {
       var indexFile = (location.pathname.match(/\/(index[^\.]*\.html)/) || ['', ''])[1],
-          rUrl = /(#!\/|api|index[^\.]*\.html).*$/,
+          rUrl = /(#!\/|home|api|index[^\.]*\.html).*$/,
           origin = location.origin || (window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '')),
           baseUrl = origin + location.href.substr(origin.length).replace(rUrl, indexFile),
           headEl = document.getElementsByTagName('head')[0],
@@ -31,6 +31,8 @@
       addTag('link', {rel: 'stylesheet', href: 'css/docs.css', type: 'text/css'});
       addTag('link', {rel: 'stylesheet', href: 'css/animations.css', type: 'text/css'});
 
+      
+         addTag('link', {rel: 'stylesheet', href: 'css/styles.css', type: 'text/css'}, sync);
       
 
       addTag('script', {src: 'js/google-code-prettify.js'}, sync);
@@ -85,13 +87,13 @@
             
               <a href="http://www.focusvision.com">
             
-              <img class="pull-left" src="grunt-styles/./assets/fv-logo.png">
+              <img class="pull-left" src="grunt-styles/ngdocs-assets/fv-logo.png">
             
               </a>
             
           
           
-            <a  href="#/api/fv.envoy"  class="brand">angular-envoy</a>
+            <a  href="#/overview"  class="brand">angular-envoy</a>
           
           <ul class="nav">
             <li ng-repeat="(url, name) in sections" ng-class="{active: isActivePath(url)}">
@@ -132,16 +134,8 @@
       <div class="span3">
         <form class="form-search" ng-submit="submitForm()">
           
-          <div class="dropdown search"
-               ng-class="{open: focused && bestMatch.rank > 0 && bestMatch.page != currentPage}">
-            <input type="text" ng-model="search" placeholder="search the docs"
-                   tabindex="1" accesskey="s" class="search-query" focused="focused">
-            <ul class="dropdown-menu">
-              <li>
-                <a href="{{bestMatch.page.url}}">{{bestMatch.page.shortName}}</a>
-              </li>
-            </ul>
-          </div>
+          <input type="text" ng-model="search" placeholder="search the docs"
+                 tabindex="1" accesskey="s" class="search-query">
           
           <div class="spacer"></div>
 

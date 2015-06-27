@@ -1,0 +1,116 @@
+<h1><code ng:non-bindable=""></code>
+<div><span class="hint"></span>
+</div>
+</h1>
+<div><div class="overview-page"><h2 id="envoy">envoy</h2>
+<p>Highly flexible form validation messaging for AngularJS</p>
+<p><strong>envoy</strong> (<a href="http://bower.io/search/?q=angular-envoy">Bower</a>,
+<a href="https://www.npmjs.com/package/angular-envoy">npm</a>; module <code>fv.envoy</code>) is an
+alternative to the <a href="https://docs.angularjs.org/api/ngMessages"><code>ngMessages</code></a>
+module offered by <a href="https://angularjs.org">AngularJS</a>.</p>
+<h3 id="envoy_features">Features</h3>
+<p>Use <strong>envoy</strong> if <code>ngMessages</code> just won&#39;t cooperate.</p>
+<ul>
+<li><strong>Easily configurable messaging for form validation</strong>: Avoid complexity of
+<code>ngSwitch</code>, <code>ngIf</code>, and <code>ngShow</code> directives to display error messages.</li>
+<li><strong>Errorlevels!  Errorlevels!!!</strong> Define validation tokens as
+&quot;errors&quot; or &quot;warnings&quot; (or user-defined values) on a per-field basis.  For
+example, you may want to simply <em>warn</em> a user that the text input field has
+a lot of characters.</li>
+<li><strong>Form Proxies</strong>: Indicate invalid forms anywhere on the page.  For
+example, if you have a list of items with dynamic forms for each, you can
+easily highlight the <em>list item itself</em> if the form is invalid, even if that
+list is outside of the form&#39;s Scope.</li>
+<li><strong>Accessible hooks</strong>: Disable the &quot;submit&quot; button if an &quot;error&quot; is present,
+but allow submission if the form simply has a &quot;warning&quot;.</li>
+<li><strong>External message storage</strong>: Store your messages in an external <code>.json</code>
+file, organized by form and control name&mdash;don&#39;t hardcode them in the view.</li>
+<li><strong>Unique directive for message display</strong>: Want to display the errors
+somewhere else?  Do that.  Want them displayed all over the damn place?
+Be my guest.</li>
+<li><strong>Nested form support</strong>: Display error messaging from child forms on the
+parent form&#39;s display; you don&#39;t need to have one display per form.</li>
+<li><strong>Actionable error messages</strong>: Execute an AngularJS expression when a user
+clicks on an error message in the display.</li>
+<li><strong>Dynamic form support</strong>: Form names dynamically generated (AngularJS
+1.3+)?  No problem.  Give them aliases, and it&#39;s business as usual.</li>
+<li><strong>Performant</strong>: Message retrieval is cached.  Only the relevant forms are
+updated on validity change.  No uncessary watches or digest loops.</li>
+<li><strong><code>ui-router</code> support</strong>: Invalid forms within nested views remain indicated
+in the message display even if the form leaves the DOM.</li>
+<li><strong>Custom display</strong>: Don&#39;t use the included template; use your own.</li>
+<li><del><strong>Does naughty things to <code>FormController</code></strong>:  Err...nevermind.</del></li>
+</ul>
+<h3 id="envoy_basic-usage">Basic Usage</h3>
+<p>To show error messaging for the <code>firstname</code> and <code>lastname</code> fields of your form
+<code>myForm</code>, try the following:</p>
+<h4 id="envoy_basic-usage_javascript">JavaScript</h4>
+<pre><code class="lang-js">// enable the module
+angular.module(&#39;myModule&#39;, [&#39;fv.envoy&#39;])
+  .config(function ($envoyProvider) {
+    $envoyProvider.options({
+      // an example template is included in partials/messages.html
+      templateUrl: &#39;/path/to/envoy-list/template.html&#39;,
+      // TODO: provide example JSON file
+      dataFileUrl: &#39;/path/to/messages.json&#39;
+    });
+  });
+</code></pre>
+<h4 id="envoy_basic-usage_json">JSON</h4>
+<pre><code class="lang-json">{
+  &quot;myForm&quot;: {
+    &quot;firstname&quot;: {
+      &quot;required&quot;: {
+        &quot;level&quot;: &quot;error&quot;,
+        &quot;message&quot;: &quot;First name is required!&quot;
+      },
+      &quot;minlength&quot;: {
+        &quot;level&quot;: &quot;warning&quot;,
+        &quot;message&quot;: &quot;Your first name is pretty short.&quot;
+      }
+    },
+    &quot;lastname&quot;: {
+      &quot;required&quot;: {
+        &quot;level&quot;: &quot;error&quot;,
+        &quot;message&quot;: &quot;Last name is required!&quot; 
+      },
+      &quot;minlength&quot;: {
+        &quot;level&quot;: &quot;warning&quot;,
+        &quot;message&quot;: &quot;Your last name is pretty short.&quot;
+      }
+    }
+  }
+}
+</code></pre>
+<h4 id="envoy_basic-usage_html">HTML</h4>
+<pre><code class="lang-html">&lt;!-- the name attribute is required for any forms you wish to use, as well as 
+     form controls --&gt;
+&lt;form name=&quot;myForm&quot; envoy-messages&gt;
+  &lt;envoy-list&gt;&lt;!-- messaging appears here --&gt;&lt;/envoy-list&gt;
+  &lt;!-- save some cycles on these two by using ngModelOptions&#39; debounce
+       see https://docs.angularjs.org/api/ng/directive/ngModelOptions --&gt;
+  &lt;input type=&quot;text&quot; name=&quot;firstname&quot; required minlength=&quot;2&quot; ng-model=&quot;user.firstname&quot;/&gt;
+  &lt;input type=&quot;text&quot; name=&quot;lastname&quot; required minlength=&quot;2&quot; ng-model=&quot;user.lastname&quot;/&gt; 
+&lt;/form&gt;
+</code></pre>
+<h3 id="envoy_api-documentation">API Documentation</h3>
+<p><a href="http://decipherinc.github.io/angular-envoy/#/api">http://decipherinc.github.io/angular-envoy/#/api</a></p>
+<h3 id="envoy_installation">Installation</h3>
+<h4 id="envoy_installation_via-bower">Via Bower</h4>
+<p>For plain-jane front-end development:</p>
+<pre><code class="lang-shell">$ bower install angular-envoy
+</code></pre>
+<h4 id="envoy_installation_via-npm">Via npm</h4>
+<p>For use with Browserify, for example:</p>
+<pre><code class="lang-shell">$ npm install angular-envoy
+</code></pre>
+<h3 id="envoy_production-dependencies">Production Dependencies</h3>
+<ul>
+<li><a href="https://www.npmjs.com/package/lodash">lodash</a> <code>&gt;= v3.0.0 &amp;&amp; &lt; v4.0.0</code></li>
+<li><a href="http://www.npmjs.com/package/debug">debug</a> <code>&gt;= v2.0.0 &amp;&amp; &lt; v3.0.0</code></li>
+</ul>
+<h3 id="envoy_author">Author</h3>
+<p><a href="https://github.com/boneskull">Christopher Hiller</a></p>
+<h3 id="envoy_license">License</h3>
+<p>MIT</p>
+</div></div>
