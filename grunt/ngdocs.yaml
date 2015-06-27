@@ -6,9 +6,9 @@
       - bower_components/angular/angular.js
       - envoy.min.js
     html5Mode: false
-    startPage: overview
+    startPage: home
     title: angular-envoy
-    titleLink: '#/overview'
+    titleLink: '#/home'
     image: ngdocs-assets/fv-logo.png
     imageLink: http://www.focusvision.com
     styles:
