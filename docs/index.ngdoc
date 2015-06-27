@@ -1,3 +1,7 @@
+@ngdoc overview
+@name Overview
+@description
+
 # envoy
 
 Highly flexible form validation messaging for AngularJS

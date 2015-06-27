@@ -1,5 +1,5 @@
 options:
-  base: ./docs
+  base: site
   dotfiles: true
 main:
   - '**'

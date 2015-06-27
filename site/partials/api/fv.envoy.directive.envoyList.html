@@ -1,0 +1,27 @@
+<a href="https://github.com/decipherinc/angular-envoy.git/blob/a405f27/lib/directives/list.js#L25" class="view-source"><i class="icon-eye-open"> </i>View source</a><h1><code ng:non-bindable="">envoyList</code>
+<div><span class="hint">directive in module <code ng:non-bindable="">fv.envoy</code>
+</span>
+</div>
+</h1>
+<div><h2 id="description">Description</h2>
+<div class="description"><div class="fv-envoy-directive-page fv-envoy-directive-envoylist-page"><p>Defines a directive which will display a list of all messages
+for a form.</p>
+<p>The template for the list is the property <code>templateUrl</code> of
+$envoyProvider.</p>
+<p>The target form can be specified, by name (with interpolation available),
+in the <code>envoyList</code> attribute or the <code>for</code> attribute.  This attribute may
+be omitted if the <code>envoyList</code> directive has an <code>envoyMessages</code> ancestor.</p>
+</div></div>
+<h2 id="usage">Usage</h2>
+<div class="usage">as attribute<pre class="prettyprint linenums">&lt;ANY envoy-list&gt;
+   ...
+&lt;/ANY&gt;</pre>
+</div>
+<h2 id="example">Example</h2>
+<div class="example"><div class="fv-envoy-directive-page fv-envoy-directive-envoylist-page"><pre><code class="lang-html">&lt;div envoy-list=&quot;configForm&quot;&gt;
+&lt;/div&gt;
+&lt;!-- or --&gt;
+&lt;envoy-list for=&quot;configForm&quot;&gt;&lt;/envoy-list&gt;
+</code></pre>
+</div></div>
+</div>

@@ -3,3 +3,9 @@ build:
 
 test:
   - eslint
+
+docs:
+  - clean:site
+  - bower-install-simple:main
+  - copy:readme
+  - ngdocs
