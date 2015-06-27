@@ -74,7 +74,7 @@ NG_DOCS={
   },
   "html5Mode": false,
   "editExample": false,
-  "startPage": "overview",
+  "startPage": "home",
   "scripts": [
     "lodash.js",
     "angular.js",
