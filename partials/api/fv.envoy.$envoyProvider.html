@@ -1,0 +1,37 @@
+<a href="https://github.com/decipherinc/angular-envoy.git/blob/f4425fe/lib/envoy/index.js#L23" class="view-source"><i class="icon-eye-open"> </i>View source</a><h1><code ng:non-bindable="">$envoyProvider</code>
+<div><span class="hint">service in module <code ng:non-bindable="">fv.envoy</code>
+</span>
+</div>
+</h1>
+<div><h2 id="description">Description</h2>
+<div class="description"><div class="fv-envoy-envoyprovider-page"><p>Allows configuration of options for Envoy; see the
+<a href="#/api/fv.envoy.$envoyProvider#options"><code>options()</code> method</a>.</p>
+<h3 id="description_default-options">Default Options</h3>
+<ul>
+<li><code>levels</code>: Three (3) default levels.  <code>ok</code>, <code>warning</code>, and <code>error</code>, in
+  increasing severity, having descriptions &quot;Fixed!&quot;, &quot;Warning&quot;, and
+  &quot;Error&quot;, respectively.</li>
+<li><code>defaultLevel:</code>ok`</li>
+<li><code>dataFileUrl</code>: <code>messages.json</code></li>
+<li><code>templateUrl</code>: <code>partials/messages.html</code></li>
+</ul>
+</div></div>
+<div class="member method"><h2 id="methods">Methods</h2>
+<ul class="methods"><li><a href="https://github.com/decipherinc/angular-envoy.git/blob/f4425fe/lib/envoy/index.js#L43" class="view-source icon-eye-open"> </a><h3 id="methods_options">options(newOpts)</h3>
+<div class="options"><div class="fv-envoy-envoyprovider-options-page"><p>Using this method, set options during <code>config()</code> phase.</p>
+</div><h5 id="methods_options_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>newOpts <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="fv-envoy-envoyprovider-options-page"><p>New options to assign onto defaults</p>
+</div><table><thead><tr><th>Property</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>levels <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-array">Array.&lt;Object.&lt;string,string&gt;&gt;</a></td><td><div class="fv-envoy-envoyprovider-options-page"><p>User-defined
+levels.  Each Object in the Array should have a <code>name</code> and
+<code>description</code> property.</p>
+</div></td></tr><tr><td>dataFileUrl <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="fv-envoy-envoyprovider-options-page"><p>The URL path to the <code>.json</code> file
+containing the messages</p>
+</div></td></tr><tr><td>templateUrl <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="fv-envoy-envoyprovider-options-page"><p>The URL path to the partial
+representing the message list</p>
+</div></td></tr><tr><td>defaultLevel <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="fv-envoy-envoyprovider-options-page"><p>The default level; corresponds to
+the <code>name</code> property of each object in the <code>levels</code> array</p>
+</div></td></tr></tbody></table></td></tr></tbody></table><h5 id="methods_options_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="fv-envoy-envoyprovider-options-page"><p>The resulting options</p>
+</div></td></tr></table></div>
+</li>
+</ul>
+</div>
+</div>
