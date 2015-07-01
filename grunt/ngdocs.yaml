@@ -7,7 +7,7 @@
       - envoy.min.js
     html5Mode: false
     startPage: home
-    title: angular-envoy
+    title: Envoy
     titleLink: '#/home'
     image: ngdocs-assets/fv-logo.png
     imageLink: http://www.focusvision.com
@@ -17,12 +17,13 @@
     editExample: false
 
   home:
-    src: docs/index.ngdoc
+    src: docs/home/**/*.ngdoc
     title: Overview
 
   api:
     src:
       - lib/*.js
       - lib/**/*.js
+      - docs/api/**/*.ngdoc
     title: API Documentation
 

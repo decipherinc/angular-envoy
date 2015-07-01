@@ -52,7 +52,7 @@ To show error messaging for the `firstname` and `lastname` fields of your form
 
 ### JavaScript
 
-```js
+<pre class="prettyprint linenums">
 // enable the module
 angular.module('myModule', ['fv.envoy'])
   .config(function ($envoyProvider) {
@@ -63,11 +63,11 @@ angular.module('myModule', ['fv.envoy'])
       dataFileUrl: '/path/to/messages.json'
     });
   });
-```
+</pre>
 
 ### JSON
 
-```json
+<pre class="prettyprint linenums">
 {
   "myForm": {
     "firstname": {
@@ -92,11 +92,11 @@ angular.module('myModule', ['fv.envoy'])
     }
   }
 }
-```
+</pre>
 
 ### HTML
 
-```html
+<pre class="prettyprint linenums">
 <!-- the name attribute is required for any forms you wish to use, as well as 
      form controls -->
 <form name="myForm" envoy-messages>
@@ -106,7 +106,7 @@ angular.module('myModule', ['fv.envoy'])
   <input type="text" name="firstname" required minlength="2" ng-model="user.firstname"/>
   <input type="text" name="lastname" required minlength="2" ng-model="user.lastname"/> 
 </form> 
-```
+</pre>
 
 ## API Documentation
 
@@ -118,17 +118,17 @@ angular.module('myModule', ['fv.envoy'])
 
 For plain-jane front-end development:
 
-```shell
+<pre class="prettyprint linenums">
 $ bower install angular-envoy
-```
+</pre>
 
 ### Via npm
 
 For use with Browserify, for example:
 
-```shell
+<pre class="prettyprint linenums">
 $ npm install angular-envoy
-```
+</pre>
 
 ## Production Dependencies
 

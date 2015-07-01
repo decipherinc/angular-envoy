@@ -1,0 +1,57 @@
+<a href="https://github.com/decipherinc/angular-envoy.git/blob/f4425fe/lib/envoy/factory.js#L55" class="view-source"><i class="icon-eye-open"> </i>View source</a><h1><code ng:non-bindable="">$envoy</code>
+<div><span class="hint">service in module <code ng:non-bindable="">fv.envoy</code>
+</span>
+</div>
+</h1>
+<div><h2 id="description">Description</h2>
+<div class="description"><div class="fv-envoy-envoy-page"><p>Retrieves a collection of messages for a form and/or control
+within that form.  If no parameters, returns the entirety of the
+data file.</p>
+</div></div>
+<h2 id="usage">Usage</h2>
+<div class="usage"><pre class="prettyprint linenums">$envoy(form);</pre>
+<h4 id="usage_parameters">Parameters</h4><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>form</td><td><a href="" class="label type-hint type-hint-formcontroller">FormController</a></td><td><div class="fv-envoy-envoy-page"><p>Form controller</p>
+</div></td></tr></tbody></table><h4 id="usage_returns">Returns</h4><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-object">Object</a></td><td><div class="fv-envoy-envoy-page"><p>Messages indexed by form name, then control name,
+and finally validation token.  May be empty if nothing is wrong
+with the form.</p>
+</div></td></tr></table></div>
+<div class="member method"><h2 id="methods">Methods</h2>
+<ul class="methods"><li><a href="https://github.com/decipherinc/angular-envoy.git/blob/f4425fe/lib/envoy/factory.js#L194" class="view-source icon-eye-open"> </a><h3 id="methods_bindform">bindForm(ctrl, formName)</h3>
+<div class="bindform"><div class="fv-envoy-envoy-bindform-page"><p>Bind a controller to a form.  Could be any object as long as it has an
+<code>update()</code> method.  When the form&#39;s validity changes, the update()
+method will be called, if the form has messages configured.</p>
+</div><h5 id="methods_bindform_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>ctrl</td><td><a href="" class="label type-hint type-hint-object">*</a></td><td><div class="fv-envoy-envoy-bindform-page"><p>Presumed to be a <code>envoyMessages</code> controller instance, but
+could be <code>envoyProxy</code> controller instance as well.</p>
+</div></td></tr><tr><td>formName</td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="fv-envoy-envoy-bindform-page"><p>Name of form</p>
+</div></td></tr></tbody></table><h5 id="methods_bindform_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-function">Function</a></td><td><div class="fv-envoy-envoy-bindform-page"><p>A function that will break the binding</p>
+</div></td></tr></table></div>
+</li>
+<li><a href="https://github.com/decipherinc/angular-envoy.git/blob/f4425fe/lib/envoy/factory.js#L123" class="view-source icon-eye-open"> </a><h3 id="methods_level">level(errorLevel)</h3>
+<div class="level"><div class="fv-envoy-envoy-level-page"><p>Utility function to convert an error level into a number or
+string or vice versa</p>
+</div><h5 id="methods_level_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>errorLevel <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-number">number</a><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="fv-envoy-envoy-level-page"><p>Error level.  If omitted, will
+return the default error level as a string.</p>
+</div></td></tr></tbody></table><h5 id="methods_level_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-object">(number|string)</a></td><td><div class="fv-envoy-envoy-level-page"><p>Corresponding string/number</p>
+</div></td></tr></table></div>
+</li>
+<li><a href="https://github.com/decipherinc/angular-envoy.git/blob/f4425fe/lib/envoy/factory.js#L365" class="view-source icon-eye-open"> </a><h3 id="methods_refresh">refresh(form, control)</h3>
+<div class="refresh"><div class="fv-envoy-envoy-refresh-page"><p>Called automatically by forms, but could conceivably be called manually
+if you wish to extend Envoy&#39;s functionality.  Pass a form and a control;
+if the control is invalid, messages will be pulled out of the data file,
+and the controllers bound via <a href="#/api/fv.envoy.$envoy#bindform">bindForm</a>
+will be updated.  In turn, this will update the view, but you could
+have a custom controller do just about anything in its <code>update()</code> method.</p>
+<p>This is asynchronous, and the underlying method is debounced--you may
+lose a call if you&#39;re too quick--but if you call it twice synchronously,
+if the first call takes less than 250ms, the second call will not
+execute.</p>
+<p>TODO: make the debounce timer configurable.</p>
+</div><h5 id="methods_refresh_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>form</td><td><a href="" class="label type-hint type-hint-messagesformcontroller">MessagesFormController</a></td><td><div class="fv-envoy-envoy-refresh-page"><p>The form whose control changed</p>
+</div></td></tr><tr><td>control</td><td><a href="" class="label type-hint type-hint-ngmodel">ngModel.NgModelController</a><a href="" class="label type-hint type-hint-messagesformcontroller">MessagesFormController</a></td><td><div class="fv-envoy-envoy-refresh-page"><p>The
+control which changed.</p>
+</div></td></tr></tbody></table><h5 id="methods_refresh_returns">Returns</h5><table class="variables-matrix"><tr><td><a href="" class="label type-hint type-hint-promise">Promise</a></td><td><div class="fv-envoy-envoy-refresh-page"><p>Returns nothing</p>
+</div></td></tr></table></div>
+</li>
+</ul>
+</div>
+</div>

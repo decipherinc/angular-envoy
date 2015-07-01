@@ -45,65 +45,70 @@ in the message display even if the form leaves the DOM.</li>
 <p>To show error messaging for the <code>firstname</code> and <code>lastname</code> fields of your form
 <code>myForm</code>, try the following:</p>
 <h4 id="envoy_basic-usage_javascript">JavaScript</h4>
-<pre><code class="lang-js">// enable the module
-angular.module(&#39;myModule&#39;, [&#39;fv.envoy&#39;])
+<pre class="prettyprint linenums" class="prettyprint linenums">
+// enable the module
+angular.module('myModule', ['fv.envoy'])
   .config(function ($envoyProvider) {
     $envoyProvider.options({
       // an example template is included in partials/messages.html
-      templateUrl: &#39;/path/to/envoy-list/template.html&#39;,
+      templateUrl: '/path/to/envoy-list/template.html',
       // TODO: provide example JSON file
-      dataFileUrl: &#39;/path/to/messages.json&#39;
+      dataFileUrl: '/path/to/messages.json'
     });
   });
-</code></pre>
+</pre>
 <h4 id="envoy_basic-usage_json">JSON</h4>
-<pre><code class="lang-json">{
-  &quot;myForm&quot;: {
-    &quot;firstname&quot;: {
-      &quot;required&quot;: {
-        &quot;level&quot;: &quot;error&quot;,
-        &quot;message&quot;: &quot;First name is required!&quot;
+<pre class="prettyprint linenums" class="prettyprint linenums">
+{
+  "myForm": {
+    "firstname": {
+      "required": {
+        "level": "error",
+        "message": "First name is required!"
       },
-      &quot;minlength&quot;: {
-        &quot;level&quot;: &quot;warning&quot;,
-        &quot;message&quot;: &quot;Your first name is pretty short.&quot;
+      "minlength": {
+        "level": "warning",
+        "message": "Your first name is pretty short."
       }
     },
-    &quot;lastname&quot;: {
-      &quot;required&quot;: {
-        &quot;level&quot;: &quot;error&quot;,
-        &quot;message&quot;: &quot;Last name is required!&quot; 
+    "lastname": {
+      "required": {
+        "level": "error",
+        "message": "Last name is required!" 
       },
-      &quot;minlength&quot;: {
-        &quot;level&quot;: &quot;warning&quot;,
-        &quot;message&quot;: &quot;Your last name is pretty short.&quot;
+      "minlength": {
+        "level": "warning",
+        "message": "Your last name is pretty short."
       }
     }
   }
 }
-</code></pre>
+</pre>
 <h4 id="envoy_basic-usage_html">HTML</h4>
-<pre><code class="lang-html">&lt;!-- the name attribute is required for any forms you wish to use, as well as 
+<pre class="prettyprint linenums" class="prettyprint linenums">
+&lt;!-- the name attribute is required for any forms you wish to use, as well as 
      form controls --&gt;
-&lt;form name=&quot;myForm&quot; envoy-messages&gt;
+&lt;form name="myForm" envoy-messages&gt;
   &lt;envoy-list&gt;&lt;!-- messaging appears here --&gt;&lt;/envoy-list&gt;
-  &lt;!-- save some cycles on these two by using ngModelOptions&#39; debounce
+  &lt;!-- save some cycles on these two by using ngModelOptions' debounce
        see https://docs.angularjs.org/api/ng/directive/ngModelOptions --&gt;
-  &lt;input type=&quot;text&quot; name=&quot;firstname&quot; required minlength=&quot;2&quot; ng-model=&quot;user.firstname&quot;/&gt;
-  &lt;input type=&quot;text&quot; name=&quot;lastname&quot; required minlength=&quot;2&quot; ng-model=&quot;user.lastname&quot;/&gt; 
-&lt;/form&gt;
-</code></pre>
+  &lt;input type="text" name="firstname" required minlength="2" ng-model="user.firstname"/&gt;
+  &lt;input type="text" name="lastname" required minlength="2" ng-model="user.lastname"/&gt; 
+&lt;/form&gt; 
+</pre>
 <h3 id="envoy_api-documentation">API Documentation</h3>
 <p><a href="http://decipherinc.github.io/angular-envoy/#/api">http://decipherinc.github.io/angular-envoy/#/api</a></p>
 <h3 id="envoy_installation">Installation</h3>
 <h4 id="envoy_installation_via-bower">Via Bower</h4>
 <p>For plain-jane front-end development:</p>
-<pre><code class="lang-shell">$ bower install angular-envoy
-</code></pre>
+<pre class="prettyprint linenums" class="prettyprint linenums">
+$ bower install angular-envoy
+</pre>
 <h4 id="envoy_installation_via-npm">Via npm</h4>
 <p>For use with Browserify, for example:</p>
-<pre><code class="lang-shell">$ npm install angular-envoy
-</code></pre>
+<pre class="prettyprint linenums" class="prettyprint linenums">
+$ npm install angular-envoy
+</pre>
 <h3 id="envoy_production-dependencies">Production Dependencies</h3>
 <ul>
 <li><a href="https://www.npmjs.com/package/lodash">lodash</a> <code>&gt;= v3.0.0 &amp;&amp; &lt; v4.0.0</code></li>
