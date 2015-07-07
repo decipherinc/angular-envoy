@@ -4,13 +4,44 @@ options:
      * <%= pkg.homepage %>
      * Copyright (c) <%= grunt.template.today('yyyy') %> Focusvision Worldwide; Licensed <%= pkg.license %>
      */
-
+  browserifyOptions:
+    baseDir: '.'
+  ignore:
+    - './node_modules/angular-animate/**'
 
 main:
   files:
     <%= bower.main %>: index.js
+  alias:
+    debug: ./support/debug.js
+  options:
+    transform:
+      -
+        - exposify
+        -
+          expose:
+            angular: angular
+            lodash: _
+
+main.full:
+  files:
+    "<%= min(bower.main, 'full') %>": index.js
+  options:
+    alias:
+      lodash: ./support/lodash.custom.js
+    transform:
+      -
+        - exposify
+        -
+          expose:
+            angular: angular
+
+debug:
+  files:
+    "<%= min(bower.main, 'debug') %>": index.js
   options:
     browserifyOptions:
+      baseDir: '.'
       debug: true
     transform:
       -
@@ -20,10 +51,28 @@ main:
             angular: angular
             lodash: _
 
+debug.full:
+  files:
+    "<%= min(bower.main, 'debug.full') %>": index.js
+  options:
+    browserifyOptions:
+      baseDir: '.'
+      debug: true
+    alias:
+      lodash: ./support/lodash.custom.js
+    transform:
+      -
+        - exposify
+        -
+          expose:
+            angular: angular
+
 min:
   files:
-    <%= min(bower.main) %>: index.js
+    "<%= min(bower.main) %>": index.js
   options:
+    alias:
+      debug: ./support/debug.js
     transform:
       -
         - exposify
@@ -31,6 +80,28 @@ min:
           expose:
             angular: angular
             lodash: _
+      -
+        - uglifyify
+        -
+          global: true
+      -
+        - jsonminifyify
+        -
+          files: package.json
+
+min.full:
+  files:
+    "<%= min(bower.main, 'min.full') %>": index.js
+  options:
+    alias:
+      lodash: ./support/lodash.custom.min.js
+      debug: ./support/debug.js
+    transform:
+      -
+        - exposify
+        -
+          expose:
+            angular: angular
       -
         - uglifyify
         -

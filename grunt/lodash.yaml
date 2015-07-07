@@ -1,0 +1,24 @@
+main:
+  dest: support/lodash.custom.js
+  options:
+    modifier: modern
+    exports: node
+    include:
+      - first
+      - assign
+      - size
+      - has
+      - forEach
+      - isNumber
+      - isObject
+      - get
+      - uniqueId
+      - pluck
+      - mapValues
+      - pick
+      - isString
+      - reduce
+      - debounce
+      - toArray
+      - filter
+      - zipObject

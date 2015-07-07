@@ -18,12 +18,14 @@ module.exports = function (grunt) {
       /**
        * Dumb little function to generate a foo.min.ext filename from foo.ext
        * @param {string} filepath Filepath
+       * @param {string} preExt Something other than 'min'
        * @returns {string} Minified filepath
        */
-      min: function min(filepath) {
+      min: function min(filepath, preExt) {
         var path = require('path');
+        preExt = preExt || 'min';
         var ext = path.extname(filepath);
-        return path.basename(filepath, ext) + '.min' + ext;
+        return path.basename(filepath, ext) + '.' + preExt + ext;
       },
 
       author: typeof pkg.author === 'string' ? pkg.author :

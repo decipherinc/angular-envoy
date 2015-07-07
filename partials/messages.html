@@ -1,7 +1,7 @@
-<fieldset class="envoy animate-fade errorlevel {{ data.className }}"
-          data-ng-show="data.error">
-  <legend>{{ data.title }}</legend>
-  <div data-ng-repeat="(formName, formMessages) in data.messages">
+<fieldset class="envoy animate-fade errorlevel {{ $envoyData.className }}"
+          data-ng-show="$envoyData.error">
+  <legend>{{ $envoyData.title }}</legend>
+  <div data-ng-repeat="(formName, formMessages) in $envoyData.messages">
     <ul class="fa-ul" data-ng-repeat="(fieldName, field) in formMessages">
       <li data-ng-repeat="(token, info) in field" class="{{ info.level }}"
           data-ng-click="info.action()"

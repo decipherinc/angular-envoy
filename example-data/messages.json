@@ -1,0 +1,32 @@
+{
+  "myForm": {
+    "name": {
+      "maxlength": {
+        "level": "error",
+        "message": "Name is too long; 70 characters max."
+      },
+      "required": {
+        "level": "error",
+        "message": "Name is required."
+      }
+    },
+    "year": {
+      "required": {
+        "level": "warning",
+        "message": "Please provide a year (but you don't have to)."
+      },
+      "pattern": {
+        "level": "error",
+        "message": "Year (if supplied) must be in the format \"YYYY\""
+      }
+    }
+  },
+  "myOtherForm": {
+    "url": {
+      "myCustomToken": {
+        "level": "error",
+        "message": "Please choose a domain name from the list above"
+      }
+    }
+  }
+}
