@@ -6,28 +6,13 @@ options:
      */
   browserifyOptions:
     baseDir: '.'
-  ignore:
-    - './node_modules/angular-animate/**'
 
 main:
   files:
-    <%= bower.main %>: index.js
-  alias:
-    debug: ./support/debug.js
-  options:
-    transform:
-      -
-        - exposify
-        -
-          expose:
-            angular: angular
-            lodash: _
-
-main.full:
-  files:
-    "<%= min(bower.main, 'full') %>": index.js
+    <%= bower.main %>: <%= pkg.main %>
   options:
     alias:
+      debug: ./support/debug-stub.js
       lodash: ./support/lodash.custom.js
     transform:
       -
@@ -38,28 +23,13 @@ main.full:
 
 debug:
   files:
-    "<%= min(bower.main, 'debug') %>": index.js
+    "<%= min(bower.main, 'debug') %>": <%= pkg.main %>
   options:
-    browserifyOptions:
-      baseDir: '.'
-      debug: true
-    transform:
-      -
-        - exposify
-        -
-          expose:
-            angular: angular
-            lodash: _
-
-debug.full:
-  files:
-    "<%= min(bower.main, 'debug.full') %>": index.js
-  options:
-    browserifyOptions:
-      baseDir: '.'
-      debug: true
     alias:
       lodash: ./support/lodash.custom.js
+    browserifyOptions:
+      baseDir: '.'
+      debug: true
     transform:
       -
         - exposify
@@ -69,17 +39,17 @@ debug.full:
 
 min:
   files:
-    "<%= min(bower.main) %>": index.js
+    "<%= min(bower.main) %>": <%= pkg.main %>
   options:
     alias:
-      debug: ./support/debug.js
+      debug: ./support/debug-stub.js
+      lodash: ./support/lodash.custom.js
     transform:
       -
         - exposify
         -
           expose:
             angular: angular
-            lodash: _
       -
         - uglifyify
         -
@@ -89,24 +59,20 @@ min:
         -
           files: package.json
 
-min.full:
+dev:
   files:
-    "<%= min(bower.main, 'min.full') %>": index.js
+    "<%= min(bower.main, 'debug') %>": <%= pkg.main %>
   options:
     alias:
-      lodash: ./support/lodash.custom.min.js
-      debug: ./support/debug.js
+      lodash: ./support/lodash.custom.js
+    browserifyOptions:
+      baseDir: '.'
+      debug: true
     transform:
       -
         - exposify
         -
           expose:
             angular: angular
-      -
-        - uglifyify
-        -
-          global: true
-      -
-        - jsonminifyify
-        -
-          files: package.json
+    watch: true
+    keepAlive: true
