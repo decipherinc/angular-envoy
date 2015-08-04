@@ -1,0 +1,36 @@
+<a href="https://github.com/decipherinc/angular-envoy.git/blob/e1fe4cb/lib/directives/form/index.js#L27" class="view-source"><i class="icon-eye-open"> </i>View source</a><h1><code ng:non-bindable="">envoyForm</code>
+<div><span class="hint">directive in module <code ng:non-bindable="">fv.envoy</code>
+</span>
+</div>
+</h1>
+<div><h2 id="description">Description</h2>
+<div class="description"><div class="fv-envoy-directives-page fv-envoy-directives-envoyform-page"><p>Use this instead of AngularJS&#39;
+<a href="https://docs.angularjs.org/api/ng/directive/form"><code>form</code></a> (or <code>ngForm</code>)
+directives.</p>
+<p>Main differences:</p>
+<ul>
+<li>It enables tracking of messages on the form.</li>
+<li>The controller is replaced with a <a href="#/api/fv.envoy.controllers:EnvoyFormController">EnvoyFormController</a>.</li>
+<li>The directive creates a new Scope.  See the <a href="#/api/fv.envoy.controllers:MessagesFormController#$alias">$alias property</a> for
+further information.</li>
+</ul>
+</div></div>
+<h2 id="usage">Usage</h2>
+<div class="usage">as element:<pre class="prettyprint linenums">&lt;envoy-form
+       [name="{string}"]&gt;
+&lt;/envoy-form&gt;</pre>
+as attribute<pre class="prettyprint linenums">&lt;ANY envoy-form
+     [name="{string}"]&gt;
+   ...
+&lt;/ANY&gt;</pre>
+as class<pre class="prettyprint linenums">&lt;ANY class="envoy-form [name: {string};]"&gt;
+   ...
+&lt;/ANY&gt;</pre>
+<h3 id="usage_directive-info">Directive info</h3>
+<div class="directive-info"><ul><li>This directive creates new scope.</li>
+</ul>
+</div>
+<h4 id="usage_directive-info_parameters">Parameters</h4><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>name <div><em>(optional)</em></div></td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="fv-envoy-directives-page fv-envoy-directives-envoyform-page"><p>Name of this form.  If omitted, the form is <em>ignored</em>
+by Envoy.</p>
+</div></td></tr></tbody></table></div>
+</div>

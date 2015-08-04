@@ -38,7 +38,7 @@ NG_DOCS={
       "type": "service",
       "moduleName": "fv.envoy",
       "shortDescription": "Retrieves a collection of messages for a form and/or control",
-      "keywords": "$envoy action angularjs api array asynchronous attached automatically bind bindform binding bound break call called calls changed changes click collection conceivably configurable configured control controller controllers controlname convert corresponding ctrl current custom data debounce debounced--you default default_errorlevel default_level defaults defined description directive empty entirety envoy envoylist envoymessages envoymessagescontroller envoyproxy error errorlevel errorlevels evaluate execute executed exists expression extend file finally find findparentcontroller form formname forms function functionality fv getaction indexed instance invalid keyed level leveldescription levels long lose manually messages method ngmodelcontroller number object optional options parameters parent pass point presumed property provider pulled quick--but refresh representing retrieves return returns second service set setaction stored string synchronously takes timer todo token turn underlying update updated utility validation validity versa vice view wrong"
+      "keywords": "$envoy action angularjs api array asynchronous attached automatically bind bindform binding bound break call called calls changed changes click collection conceivably configurable configured control controller controllers controlname convert corresponding ctrl custom data debounce debounced--you default default_errorlevel default_level defaults defined description directive empty entirety envoy envoyform envoyformcontroller envoylist envoyproxy error errorlevel errorlevels evaluate execute executed exists expression extend file finally find findcontroller form formname forms function functionality fv getaction group indexed instance invalid keyed level leveldescription levels long lose manually messages method ngmodelcontroller number object optional options parameters pass point presumed property provider pulled quick--but refresh representing retrieves return returns second service set setaction stored string synchronously takes timer todo token turn type underlying update updated utility validation validity versa vice view wrong"
     },
     {
       "section": "api",
@@ -55,17 +55,8 @@ NG_DOCS={
       "shortName": "EnvoyFormController",
       "type": "controller",
       "moduleName": "fv.envoy",
-      "shortDescription": "EnvoyFormController replaces",
-      "keywords": "$alias $envoy $isform $setvalidity alias angularjs api attribute case change collisions control controller controllers create decreased defaults descendant difference difficult direct directive directives dynamic envoy envoyformcontroller error errors exist existence field form formcontroller forms fv handle implemented increased interpolated invalid ll member messages method names ngmodelcontroller number org parent places point practically proper property reason replaces scope set simply subform there--much time token touched true truthy update valid validation"
-    },
-    {
-      "section": "api",
-      "id": "fv.envoy.controllers:EnvoyMessagesController",
-      "shortName": "EnvoyMessagesController",
-      "type": "controller",
-      "moduleName": "fv.envoy",
-      "shortDescription": "The controller for the envoyMessages directive.",
-      "keywords": "$children $envoy $form $name $parent $rootscope $view $viewdata addchild adds api array bind bindview bound child control controller controllers data debugging directive directives display envoy envoylist envoymessages envoymessagescontroller envoymessagescontrollers errorlevel existing form function fv generic housing keyed level leveldescription merged messages messageslist numeric object parent property provided purposes removechild removes retrieves returns scope title token unbind unbindview update view"
+      "shortDescription": "EnvoyFormController is a superset of",
+      "keywords": "$alias $envoy $setvalidity alias angularjs api attribute case change collisions control controller controllers create decreased defaults descendant direct directive directives dynamic envoy envoyformcontroller error errors exist field form formcontroller forms fv handle implemented increased interpolated invalid ll member messages method names ngmodelcontroller number org parent places proper property scope set subform superset there--much token truthy update valid validation"
     },
     {
       "section": "api",
@@ -87,15 +78,6 @@ NG_DOCS={
     },
     {
       "section": "api",
-      "id": "fv.envoy.directive:envoyMessages",
-      "shortName": "envoyMessages",
-      "type": "directive",
-      "moduleName": "fv.envoy",
-      "shortDescription": "Enables display of messages for a form.",
-      "keywords": "ae api directive display enables envoy envoymessages form fv list messages subform"
-    },
-    {
-      "section": "api",
       "id": "fv.envoy.directive:envoyProxy",
       "shortName": "envoyProxy",
       "type": "directive",
@@ -105,12 +87,12 @@ NG_DOCS={
     },
     {
       "section": "api",
-      "id": "fv.envoy.directives:form",
-      "shortName": "form",
+      "id": "fv.envoy.directives:envoyForm",
+      "shortName": "envoyForm",
       "type": "directive",
       "moduleName": "fv.envoy",
-      "shortDescription": "Alias: ngForm",
-      "keywords": "$alias alias angularjs api controller controllers creates differences directive directives envoy envoyformcontroller form fv ngform org property replaced replaces scope"
+      "shortDescription": "Use this instead of AngularJS&#39;",
+      "keywords": "$alias angularjs api controller controllers creates differences directive directives eac enables envoy envoyformcontroller form fv main messages ngform org property replaced scope tracking"
     }
   ],
   "apis": {

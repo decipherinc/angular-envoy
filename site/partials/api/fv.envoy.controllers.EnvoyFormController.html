@@ -1,18 +1,15 @@
-<a href="https://github.com/decipherinc/angular-envoy.git/blob/730950a/lib/form-decorator.js#L62" class="view-source"><i class="icon-eye-open"> </i>View source</a><h1><code ng:non-bindable="">EnvoyFormController</code>
+<a href="https://github.com/decipherinc/angular-envoy.git/blob/e1fe4cb/lib/directives/form/formcontroller.js#L63" class="view-source"><i class="icon-eye-open"> </i>View source</a><h1><code ng:non-bindable="">EnvoyFormController</code>
 <div><span class="hint">controller in module <code ng:non-bindable="">fv.envoy</code>
 </span>
 </div>
 </h1>
 <div><h2 id="description">Description</h2>
-<div class="description"><div class="fv-envoy-controllers-page fv-envoy-controllers-envoyformcontroller-page"><p><code>EnvoyFormController</code> replaces
-<a href="https://docs.angularjs.org/api/ng/type/form.FormController#!"><code>FormController</code></a>
-with itself; any time you use the
-<a href="https://docs.angularjs.org/api/ng/directive/form"><code>form</code></a> directive,
-your controller will be this instead, <strong>except</strong> if your <code>form</code> has no
-<code>name</code> attribute, at which point it is <em>ignored</em> by Envoy.</p>
+<div class="description"><div class="fv-envoy-controllers-page fv-envoy-controllers-envoyformcontroller-page"><p><code>EnvoyFormController</code> is a superset of
+<a href="https://docs.angularjs.org/api/ng/type/form.FormController#!"><code>FormController</code></a>.
+It <em>requires</em> a <code>name</code> attribute.</p>
 </div></div>
 <div class="member method"><h2 id="methods">Methods</h2>
-<ul class="methods"><li><a href="https://github.com/decipherinc/angular-envoy.git/blob/730950a/lib/form-decorator.js#L155" class="view-source icon-eye-open"> </a><h3 id="methods_$setvalidity">$setValidity(token, value, control)</h3>
+<ul class="methods"><li><a href="https://github.com/decipherinc/angular-envoy.git/blob/e1fe4cb/lib/directives/form/formcontroller.js#L27" class="view-source icon-eye-open"> </a><h3 id="methods_$setvalidity">$setValidity(token, value, control)</h3>
 <div class="$setvalidity"><div class="fv-envoy-controllers-page fv-envoy-controllers-envoyformcontroller-setvalidity-page"><p>If the number of errors in this form has increased or decreased
 and the control being set valid or invalid is a member of this
 form proper, then tell <a href="#/api/fv.envoy.envoy:$envoy">$envoy</a> handle
@@ -22,7 +19,7 @@ descendant of this form.</p>
 </div><h5 id="methods_$setvalidity_parameters">Parameters</h5><table class="variables-matrix table table-bordered table-striped"><thead><tr><th>Param</th><th>Type</th><th>Details</th></tr></thead><tbody><tr><td>token</td><td><a href="" class="label type-hint type-hint-string">string</a></td><td><div class="fv-envoy-controllers-page fv-envoy-controllers-envoyformcontroller-setvalidity-page"><p>Validation token</p>
 </div></td></tr><tr><td>value</td><td><a href="" class="label type-hint type-hint-boolean">boolean</a><a href="" class="label type-hint type-hint-object">*</a></td><td><div class="fv-envoy-controllers-page fv-envoy-controllers-envoyformcontroller-setvalidity-page"><p>If truthy, then the validation token is
 in an error state.</p>
-</div></td></tr><tr><td>control</td><td><a href="" class="label type-hint type-hint-ngmodel">ngModel.NgModelController</a><a href="" class="label type-hint type-hint-form">form.FormController</a><a href="" class="label type-hint type-hint-fv">fv.envoy.controllers.EnvoyFormController</a></td><td><div class="fv-envoy-controllers-page fv-envoy-controllers-envoyformcontroller-setvalidity-page"><p>Some control on the form; may be a subform or a field.</p>
+</div></td></tr><tr><td>control</td><td><a href="" class="label type-hint type-hint-ngmodel">ngModel.NgModelController</a><a href="" class="label type-hint type-hint-formcontroller">FormController.FormController</a><a href="" class="label type-hint type-hint-fv">fv.envoy.controllers.EnvoyFormController</a></td><td><div class="fv-envoy-controllers-page fv-envoy-controllers-envoyformcontroller-setvalidity-page"><p>Some control on the form; may be a subform or a field.</p>
 </div></td></tr></tbody></table></div>
 </li>
 </ul>
@@ -40,13 +37,6 @@ there--much like <code>FormController</code> places its <code>name</code> attrib
 Scope, if present.  Because collisions could exist in the case of
 &quot;dynamic&quot; forms, the <a href="#/api/fv.envoy.directives:form">form directive</a>
 must create a new Scope.</p>
-</div></div>
-</li>
-<li><h3 id="properties_$isform">$isForm</h3>
-<div class="$isform"><div class="fv-envoy-controllers-page fv-envoy-controllers-envoyformcontroller-isform-page"><p>This will always be <code>true</code> for any form touched by Envoy.  The reason
-for its existence is simply that it can be practically difficult
-to tell the difference between a <code>FormController</code> and an
-<a href="https://docs.angularjs.org/api/ng/type/ngModel.NgModelController"><code>NgModelController</code></a>.</p>
 </div></div>
 </li>
 </ul>
